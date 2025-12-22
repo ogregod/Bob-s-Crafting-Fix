@@ -12,7 +12,7 @@ export class ModuleConfig extends FormApplication {
         const title = game.i18n.localize("beaversCrafting.module-config.title");
         return foundry.utils.mergeObject(super.defaultOptions, {
             title: title,
-            template: "modules/beavers-crafting/templates/module-config.hbs",
+            template: "modules/bobs-crafting-guide/templates/module-config.hbs",
             id: "beavers-crafting-module-config",
             width: 600,
             height: 400,

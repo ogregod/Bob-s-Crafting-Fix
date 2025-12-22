@@ -120,7 +120,7 @@ export class RecipeSheet {
   }
 
   async render() {
-    let main = await renderTemplate("modules/beavers-crafting/templates/recipe-main.hbs",
+    let main = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-main.hbs",
       {
         recipe: this.recipe,
         currencies: beaversSystemInterface.configCurrencies,
@@ -133,19 +133,19 @@ export class RecipeSheet {
       });
     let description = "";
     if (game["version"].split(".")[0] >= 12) {
-      description = await renderTemplate("modules/beavers-crafting/templates/recipe-descriptionV12.hbs",
+      description = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
         {
           recipe: this.recipe,
           editable: this.editable,
         });
     } else {
-      description = await renderTemplate("modules/beavers-crafting/templates/recipe-description.hbs",
+      description = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-description.hbs",
         {
           recipe: this.recipe,
           editable: this.editable,
         });
     }
-    let template = await renderTemplate("modules/beavers-crafting/templates/recipe-sheet.hbs", {
+    let template = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-sheet.hbs", {
       main: main,
       description: description,
       active: this.sheet.active,

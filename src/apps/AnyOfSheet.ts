@@ -56,7 +56,7 @@ export class AnyOfSheet {
         if (this.checkItem) {
             macroResult = await this.anyOf.executeMacro(this.checkItem);
         }
-        let template = await renderTemplate('modules/beavers-crafting/templates/anyof-sheet.hbs',
+        let template = await renderTemplate('modules/bobs-crafting-guide/templates/anyof-sheet.hbs',
             {anyOf: this.anyOf, editable: this.editable, checkItem: this.checkItem, macroResult: macroResult});
         this.anyOfElement.find('.anyOf').remove();
         this.anyOfElement.append(template);

@@ -52,7 +52,7 @@ export class CraftingApp extends Application {
             title: game.i18n.localize(`beaversCrafting.crafting-app.title`),
             width: Settings.get(Settings.CRAFTING_APP_WIDTH),
             height: Settings.get(Settings.CRAFTING_APP_HEIGHT),
-            template: "modules/beavers-crafting/templates/crafting-app.hbs",
+            template: "modules/bobs-crafting-guide/templates/crafting-app.hbs",
             closeOnSubmit: true,
             submitOnClose: true,
             submitOnChange: true,
@@ -99,7 +99,7 @@ export class CraftingApp extends Application {
         await crafting.checkRequired();
         await crafting.checkCurrency();
         this.data.result = crafting.result;
-        this.data.content = await renderTemplate('modules/beavers-crafting/templates/crafting-app-main.hbs',
+        this.data.content = await renderTemplate('modules/bobs-crafting-guide/templates/crafting-app-main.hbs',
             {
                 recipe: this.data.recipe,
                 currencyComponent: this.data.recipe.currency?getCurrencyComponent(this.data.recipe.currency.name,this.data.recipe.currency.value):undefined,

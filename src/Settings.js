@@ -2,7 +2,7 @@ import {ModuleConfig} from "./apps/ModuleConfig.js";
 
 export class Settings {
 
-    static NAMESPACE = "beavers-crafting";
+    static NAMESPACE = "bobs-crafting-guide";
     static CREATE_ITEM_TITLE = "createItemTitle";
     static DISPLAY_RESULTS = "displayResults";
     static DISPLAY_INGREDIENTS = "displayIngredients";
@@ -14,7 +14,7 @@ export class Settings {
     static MAJOR_VERSION = "majorVersion";
     static CRAFTING_APP_WIDTH = "craftingAppWidth";
     static CRAFTING_APP_HEIGHT = "craftingAppHeight";
-    static ACTOR_TAB_ID = "beavers-crafting";
+    static ACTOR_TAB_ID = "bobs-crafting-guide";
     static CURRENCY_EXCHANGE = "currencyExchange"
     static DISABLED_ACTOR = "disabledActor";
     static SEPARATE_CRAFTED_ITEMS = "separateCraftedItems";

@@ -57,7 +57,7 @@ interface ComponentResultData {
 type UserInteraction =  "always" | "never" | "onSuccess";
 
 type ComponentType = "consumed" | "required" | "produced";
-type DataType = "required" | "input" | "output";
+type DataType = "required" | "input" | "output" | "failureOutput";
 
 type ComponentStatus = "success"|"error"|"locked"|"undefined"|"unknown";
 
@@ -131,6 +131,11 @@ interface RecipeData {
         }
     }
     output: {
+        [key: string]: {
+            [key: string]: ComponentData
+        }
+    }
+    failureOutput?: {
         [key: string]: {
             [key: string]: ComponentData
         }

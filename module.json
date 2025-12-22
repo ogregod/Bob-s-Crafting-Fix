@@ -1,12 +1,12 @@
 {
-  "title": "Beaver's Crafting Module",
+  "title": "Bob's Crafting Guide",
   "description": "A Module for crafting, brewing, harvesting, mining, fabricating, gathering, character advancement, tech tree, skill tree, ability tree, downtime activities, factions / organisation reputation, quest logs, skill training",
-  "id": "beavers-crafting",
+  "id": "bobs-crafting-guide",
   "version": "4.1.6",
   "authors": [
     {
-      "name": "angryBeaver",
-      "url": "https://github.com/angrybeaver"
+      "name": "Bob (ogregod)",
+      "url": "https://github.com/ogregod"
     }
   ],
   "languages": [
@@ -38,15 +38,15 @@
       "label": "ingredients",
       "name": "ingredients",
       "path": "./packs/ingredients.db",
-      "module": "beavers-crafting",
+      "module": "bobs-crafting-guide",
       "system": "dnd5e",
       "type": "Item",
       "private": false
     }
   ],
-  "url": "https://github.com/AngryBeaver/beavers-crafting",
-  "manifest": "https://github.com/AngryBeaver/beavers-crafting/releases/latest/download/module.json",
-  "download": "https://github.com/AngryBeaver/beavers-crafting/releases/latest/download/beavers-crafting.zip",
+  "url": "https://github.com/ogregod/Bob-s-Crafting-Fix",
+  "manifest": "https://github.com/ogregod/Bob-s-Crafting-Fix/releases/latest/download/module.json",
+  "download": "https://github.com/ogregod/Bob-s-Crafting-Fix/releases/latest/download/bobs-crafting-guide.zip",
   "relationships": {
     "requires": [
       {

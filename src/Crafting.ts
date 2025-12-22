@@ -155,6 +155,7 @@ export class Crafting implements CraftingData {
         await RecipeCompendium.evaluateOptions("required",this.recipe,this.actor.items);
         await RecipeCompendium.evaluateOptions("input",this.recipe,this.actor.items);
         await RecipeCompendium.evaluateOptions("output",this.recipe,this.actor.items);
+        await RecipeCompendium.evaluateOptions("failureOutput",this.recipe,this.actor.items);
     }
 
     async checkCurrency() {
@@ -176,6 +177,13 @@ export class Crafting implements CraftingData {
         }
     }
 
+    async addFailureOutput() {
+        const components = await this._getFailureResultComponents(this.result);
+        for (const component of components) {
+            this.result.updateComponent("produced", component);
+        }
+    }
+
     async executeMacro() {
         const macroResult = await this.recipe.executeMacro(this.recipe, this.result, this.actor);
         if (macroResult.error !== undefined) {
@@ -192,13 +200,13 @@ export class Crafting implements CraftingData {
         const componentList: Component[] = [];
         for (const componentResult of this.result._components.required._data) {
             const component = beaversSystemInterface.componentCreate(componentResult.component);
-            if (componentResult.userInteraction !== "never") {
+            if (componentResult.userInteraction === "always") {
                 componentList.push(component);
             }
         }
         for (const componentResult of this.result._components.consumed._data) {
             const component = beaversSystemInterface.componentCreate(componentResult.component);
-            if (componentResult.userInteraction !== "never") {
+            if (componentResult.userInteraction === "always") {
                 componentList.push(component);
             }
         }
@@ -213,12 +221,12 @@ export class Crafting implements CraftingData {
         }
         this.actor = await fromUuid(this.actor.uuid);
         for (const componentResult of this.result._components.required._data) {
-            if (componentResult.userInteraction !== "never") {
+            if (componentResult.userInteraction === "always") {
                 componentResult.setProcessed(true);
             }
         }
         for (const componentResult of this.result._components.consumed._data) {
-            if (componentResult.userInteraction !== "never") {
+            if (componentResult.userInteraction === "always") {
                 componentResult.setProcessed(true);
             }
         }
@@ -250,6 +258,10 @@ export class Crafting implements CraftingData {
 
     async processAll() {
         if (this.result._hasException) return;
+        // Add failure outputs if crafting failed
+        if (this.result.hasError()) {
+            await this.addFailureOutput();
+        }
         this.actor = await fromUuid(this.actor.uuid); //refresh Actor
         const componentList: Component[] = [];
         componentList.push(...this._processComponentResult(this.result._components.required));
@@ -378,7 +390,7 @@ export class Crafting implements CraftingData {
     }
 
     async _sendToChat() {
-        let content = await renderTemplate(`modules/${Settings.NAMESPACE}/templates/crafting-chat.hbs`,
+        let content = await renderTemplate(`modules/bobs-crafting-guide/templates/crafting-chat.hbs`,
             {
                 data: this.getChatData(),
             })
@@ -405,6 +417,15 @@ export class Crafting implements CraftingData {
     async _getResultComponents(result: Result): Promise<ComponentData[]> {
         const resultComponents = RecipeCompendium._filterData(this.recipe.output,c => c.type === "Item");
         const tables = RecipeCompendium._filterData(this.recipe.output,c => c.type === "RollTable");
+        for (const component of tables) {
+            resultComponents.push(...await this._rollTableToComponents(component, result));
+        }
+        return resultComponents;
+    }
+
+    async _getFailureResultComponents(result: Result): Promise<ComponentData[]> {
+        const resultComponents = RecipeCompendium._filterData(this.recipe.failureOutput,c => c.type === "Item");
+        const tables = RecipeCompendium._filterData(this.recipe.failureOutput,c => c.type === "RollTable");
         for (const component of tables) {
             resultComponents.push(...await this._rollTableToComponents(component, result));
         }

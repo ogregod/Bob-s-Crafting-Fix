@@ -18,6 +18,11 @@ export class Recipe implements RecipeData {
             [key: string]: Component
         }
     }
+    failureOutput: {
+        [key: string]: {
+            [key: string]: Component
+        }
+    }
     required: {
         [key: string]: {
             [key: string]: Component
@@ -44,6 +49,10 @@ export class Recipe implements RecipeData {
             ands: {},
             ors: {}
         };
+        failureOutput: {
+            ands: {},
+            ors: {}
+        };
         beaversTests: {
             ands: {},
             ors: {}
@@ -61,7 +70,7 @@ export class Recipe implements RecipeData {
 
     static fromItem(item): Recipe {
         const flags = foundry.utils.getProperty(item,`flags.${Settings.NAMESPACE}.recipe`) || {};
-        const data = foundry.utils.mergeObject({input: {}, output: {}, required: {}}, flags, {inplace: false});
+        const data = foundry.utils.mergeObject({input: {}, output: {}, failureOutput: {}, required: {}}, flags, {inplace: false});
         return new Recipe(item.uuid, item.id, item.name, item.img, data);
     }
 
@@ -108,6 +117,7 @@ export class Recipe implements RecipeData {
         this.required = migrate(data.attendants || {}) || deserializeComponents(data.required || {});
         this.input = migrate(data.ingredients || {}) || deserializeComponents(data.input || {});
         this.output = migrate(data.results || {}) || deserializeComponents(data.output || {});
+        this.failureOutput = deserializeComponents(data.failureOutput || {});
         this.tests = data.tests;
         this.beaversTests = data.beaversTests;
         this.currency = data.currency;
@@ -128,6 +138,10 @@ export class Recipe implements RecipeData {
                 ands: {},
                 ors: {}
             },
+            failureOutput: {
+                ands: {},
+                ors: {}
+            },
             beaversTests: {
                 ands: {},
                 ors: {},
@@ -141,6 +155,7 @@ export class Recipe implements RecipeData {
             required: this.serializeData("required"),
             input: this.serializeData("input"),
             output: this.serializeData("output"),
+            failureOutput: this.serializeData("failureOutput"),
             currency: this.currency,
             tool: this.tool,
             macro: this.macro,
@@ -169,6 +184,9 @@ export class Recipe implements RecipeData {
         serialized["-=attendants"] = null;
         serialized["-=ingredients"] = null;
         serialized["-=results"] = null;
+        if(!this.failureOutput || Object.keys(this.failureOutput).length === 0) {
+            serialized["-=failureOutput"] = null;
+        }
         return serialized;
     }
 
@@ -219,6 +237,10 @@ export class Recipe implements RecipeData {
         this._addData("output", component, keyId, group)
     }
 
+    addFailureOutput(component:Component, keyId, group) {
+        this._addData("failureOutput", component, keyId, group)
+    }
+
     removeRequired(group, id) {
         this._removeData("required", group, id);
     }
@@ -229,6 +251,10 @@ export class Recipe implements RecipeData {
 
     removeOutput(group, id) {
         this._removeData("output", group, id);
+    }
+
+    removeFailureOutput(group, id) {
+        this._removeData("failureOutput", group, id);
     }
 
     _addData(dataType:DataType, component:Component, keyId, group) {

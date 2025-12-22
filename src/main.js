@@ -126,10 +126,10 @@ Hooks.once("beavers-system-interface.ready", async function(){
 //add Subtype to create Item
     Hooks.on("preCreateItem", (doc, createData, options, user) => {
         if (foundry.utils.getProperty(createData, `flags.${Settings.NAMESPACE}.subtype`) === 'recipe' ) {
-            doc.updateSource({"flags.beavers-crafting.subtype": Settings.RECIPE_SUBTYPE,"img":"icons/sundries/scrolls/scroll-worn-tan.webp"});
+            doc.updateSource({[`flags.${Settings.NAMESPACE}.subtype`]: Settings.RECIPE_SUBTYPE,"img":"icons/sundries/scrolls/scroll-worn-tan.webp"});
         }
         if (foundry.utils.getProperty(createData,`flags.${Settings.NAMESPACE}.subtype`) === 'anyOf' ) {
-            doc.updateSource({"flags.beavers-crafting.subtype": Settings.ANYOF_SUBTYPE,"img":"modules/beavers-crafting/icons/anyOf.png"});
+            doc.updateSource({[`flags.${Settings.NAMESPACE}.subtype`]: Settings.ANYOF_SUBTYPE,"img":"modules/bobs-crafting-guide/icons/anyOf.png"});
         }
     });
 
@@ -147,7 +147,7 @@ Hooks.once("beavers-system-interface.ready", async function(){
         if(Settings.get(Settings.CAPTURE_CREATE_ITEM_TITLE)) {
             var title = dialog.data?.title || dialog.options.window.title;
             var captureItemWindow = (e)=> {
-                ui.notifications.info("Capture and set title of window for beavers-crafting module to "+title);
+                ui.notifications.info("Capture and set title of window for Bob's Crafting Guide module to "+title);
                 Settings.set(Settings.CREATE_ITEM_TITLE, title);
                 Settings.set(Settings.CAPTURE_CREATE_ITEM_TITLE,false);
                 dialog.close()
@@ -210,7 +210,7 @@ Hooks.once("beavers-system-interface.ready", async function(){
             if(form.length === 0 && html.prop("tagName") === "FORM"){
                 form = html;
             }
-            form.append('<input class="subtype" name="flags.beavers-crafting.subtype" style="display:none" value="">');
+            form.append(`<input class="subtype" name="flags.${Settings.NAMESPACE}.subtype" style="display:none" value="">`);
         }
 
         html.find("select[name='type']").on("change", function (event) {
@@ -240,30 +240,30 @@ Hooks.once("beavers-system-interface.ready", async function(){
             </label>
         </li><li>
             <label>
-                <img src="modules/beavers-crafting/icons/anyOf.png" alt="AnyOf">
+                <img src="modules/bobs-crafting-guide/icons/anyOf.png" alt="AnyOf">
                 <span>AnyOf</span>
                 <input type="radio" data-subType="anyOf" name="type" value="${itemType}">
             </label>
-        </li><input class="subtype" name="flags.beavers-crafting.subtype" style="display:none" value="">`)
+        </li><input class="subtype" name="flags.${Settings.NAMESPACE}.subtype" style="display:none" value="">`)
         html.find("input[type=radio]").on("click", function () {
             const subType = $(this).data("subtype");
             html.find("input.subtype").val(subType);
         })
     }
 
-    getTemplate('modules/beavers-crafting/templates/beavers-folders.hbs').then(t=>{
+    getTemplate('modules/bobs-crafting-guide/templates/beavers-folders.hbs').then(t=>{
         Handlebars.registerPartial('beavers-folders', t);
     });
-    getTemplate('modules/beavers-crafting/templates/beavers-recipe-folder-item.hbs').then(t=>{
+    getTemplate('modules/bobs-crafting-guide/templates/beavers-recipe-folder-item.hbs').then(t=>{
         Handlebars.registerPartial('beavers-recipe-folder-item', t);
     });
-    getTemplate('modules/beavers-crafting/templates/beavers-actor-folder-item.hbs').then(t=>{
+    getTemplate('modules/bobs-crafting-guide/templates/beavers-actor-folder-item.hbs').then(t=>{
         Handlebars.registerPartial('beavers-actor-folder-item', t);
     });
-    getTemplate('modules/beavers-crafting/templates/beavers-recipe-component.hbs').then(t=>{
+    getTemplate('modules/bobs-crafting-guide/templates/beavers-recipe-component.hbs').then(t=>{
         Handlebars.registerPartial('beavers-recipe-component', t);
     });
-    getTemplate('modules/beavers-crafting/templates/beavers-recipe.hbs').then(t=>{
+    getTemplate('modules/bobs-crafting-guide/templates/beavers-recipe.hbs').then(t=>{
         Handlebars.registerPartial('beavers-recipe', t);
     })
 });

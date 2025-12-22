@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s \"c:\\\\Users\\\\Bob\\\\Documents\\\\GitHub\\\\Bob-s-Crafting-Fix\")",
+      "Bash(wc:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install)",
+      "Bash(find:*)",
+      "Bash(npm run release)"
+    ]
+  }
+}

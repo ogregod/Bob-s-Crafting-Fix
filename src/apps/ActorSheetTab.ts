@@ -39,7 +39,7 @@ export class ActorSheetTab {
             unsortedFolders.push({folder:folder,crafting:crafting,chatData:crafting.getChatData(),id:x});
         }
         const sortedFolders = sortByFolder(unsortedFolders)
-        const tabBody = $(await renderTemplate('modules/beavers-crafting/templates/actor-sheet-tab.hbs',
+        const tabBody = $(await renderTemplate('modules/bobs-crafting-guide/templates/actor-sheet-tab.hbs',
             {
                 folders:sortedFolders,
             }));
