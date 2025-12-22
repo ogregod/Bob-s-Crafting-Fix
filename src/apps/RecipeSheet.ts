@@ -104,7 +104,8 @@ export class RecipeSheet {
         recipeSheetDragDrop.bind(this.recipeElement[0]);
         return;
       }
-      const dragDrop = new DragDrop({
+      const DragDropImpl = ((foundry as any).applications?.ux?.DragDrop?.implementation) || DragDrop;
+      const dragDrop = new DragDropImpl({
         dropSelector: ".drop-area",
         permissions: {
           dragstart: () => true,
@@ -123,7 +124,8 @@ export class RecipeSheet {
   }
 
   async render() {
-    let main = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-main.hbs",
+    const renderTemplateFunc = ((foundry as any).applications?.handlebars?.renderTemplate || renderTemplate) as typeof renderTemplate;
+    let main = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-main.hbs",
       {
         recipe: this.recipe,
         currencies: Dnd5eCurrency.CURRENCIES,
@@ -136,19 +138,19 @@ export class RecipeSheet {
       });
     let description = "";
     if (game["version"].split(".")[0] >= 12) {
-      description = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
+      description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
         {
           recipe: this.recipe,
           editable: this.editable,
         });
     } else {
-      description = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-description.hbs",
+      description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-description.hbs",
         {
           recipe: this.recipe,
           editable: this.editable,
         });
     }
-    let template = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-sheet.hbs", {
+    let template = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-sheet.hbs", {
       main: main,
       description: description,
       active: this.sheet.active,

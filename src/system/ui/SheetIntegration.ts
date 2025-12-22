@@ -134,25 +134,29 @@ export class SheetIntegration {
      * Replace content in an item sheet
      * @param app The sheet application
      * @param html The sheet HTML
-     * @param element Selector or element to replace
+     * @param newContent The new content to insert (jQuery element or HTML string)
      */
-    static replaceContent(app: any, html: any, element: string | HTMLElement): void {
-        const htmlElement = html instanceof jQuery ? html[0] : html;
+    static replaceContent(app: any, html: any, newContent: any): void {
+        const $html = (html instanceof jQuery ? html : $(html)) as JQuery;
 
-        let targetElement: HTMLElement | null = null;
-        if (typeof element === 'string') {
-            targetElement = htmlElement.querySelector(element);
-        } else {
-            targetElement = element;
+        // Find the main content area to replace
+        // Try multiple selectors for different sheet versions
+        let $contentArea = $html.find('.sheet-body');
+        if ($contentArea.length === 0) {
+            $contentArea = $html.find('.window-content');
+        }
+        if ($contentArea.length === 0) {
+            $contentArea = $html.find('form.editable, form');
         }
 
-        if (!targetElement) {
-            console.warn("Could not find element to replace in item sheet");
+        if ($contentArea.length === 0) {
+            console.warn("Could not find content area to replace in item sheet");
             return;
         }
 
-        // Replace is handled by the caller providing the new content
-        // This is a placeholder for compatibility
+        // Clear existing content and add new content
+        $contentArea.empty();
+        $contentArea.append(newContent);
     }
 
     /**

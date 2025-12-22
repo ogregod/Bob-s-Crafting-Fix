@@ -53,11 +53,12 @@ export class AnyOfSheet {
     }
 
     async render() {
+        const renderTemplateFunc = ((foundry as any).applications?.handlebars?.renderTemplate || renderTemplate) as typeof renderTemplate;
         let macroResult:MacroResult<boolean> = {value:true};
         if (this.checkItem) {
             macroResult = await this.anyOf.executeMacro(this.checkItem);
         }
-        let template = await renderTemplate('modules/bobs-crafting-guide/templates/anyof-sheet.hbs',
+        let template = await renderTemplateFunc('modules/bobs-crafting-guide/templates/anyof-sheet.hbs',
             {anyOf: this.anyOf, editable: this.editable, checkItem: this.checkItem, macroResult: macroResult});
         this.anyOfElement.find('.anyOf').remove();
         this.anyOfElement.append(template);
@@ -80,7 +81,8 @@ export class AnyOfSheet {
             if (this.app._dragDrop) {
                 this.app._dragDrop = this.app._dragDrop.filter(d => d.name !== "anyOfSheet");
             }
-            const dragDrop = new DragDrop({
+            const DragDropImpl = ((foundry as any).applications?.ux?.DragDrop?.implementation) || DragDrop;
+            const dragDrop = new DragDropImpl({
                 dropSelector: '',
                 permissions: {
                     dragstart: ()=>true,
