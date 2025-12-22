@@ -146,19 +146,19 @@ export class CraftingApp extends Application {
         html.find('.results .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_RESULTS)) {
-                fromUuid(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>{if(i) (i as any).sheet.render(true)});
             }
         });
         html.find('.ingredients .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-                fromUuid(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>{if(i) (i as any).sheet.render(true)});
             }
         });
         html.find('.attendants .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-                fromUuid(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>{if(i) (i as any).sheet.render(true)});
             }
         });
         html.find(".main .folderName").on("click", (e)=>{

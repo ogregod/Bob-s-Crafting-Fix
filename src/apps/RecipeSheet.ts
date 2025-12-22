@@ -324,19 +324,19 @@ export class RecipeSheet {
     this.recipeElement.find(".results .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_RESULTS)) {
-        fromUuid(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => {if(i) (i as any).sheet.render(true)});
       }
     });
     this.recipeElement.find(".ingredients .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-        fromUuid(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => {if(i) (i as any).sheet.render(true)});
       }
     });
     this.recipeElement.find(".attendants .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-        fromUuid(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => {if(i) (i as any).sheet.render(true)});
       }
     });
   }

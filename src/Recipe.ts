@@ -2,7 +2,8 @@ import {Settings} from "./Settings.js";
 import {sanitizeUuid} from "./helpers/Utility.js";
 import {Result} from "./Result.js";
 import { recipeSkillToTests, recipeTestsToBeaversTests } from "./migration.js";
-import {Component} from "./system/Component.js";
+import {Component, ComponentData} from "./system/Component.js";
+import {SerializedTest} from "./system/tests/Test.js";
 
 export class Recipe implements RecipeData {
     uuid: string;

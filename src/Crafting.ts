@@ -3,7 +3,7 @@ import {Settings} from "./Settings.js";
 import {RecipeCompendium} from "./apps/RecipeCompendium.js";
 import {Result} from "./Result.js";
 import {TestHandler} from "./TestHandler.js";
-import {Component} from "./system/Component.js";
+import {Component, ComponentData} from "./system/Component.js";
 import {Dnd5eCurrency} from "./system/currency/Dnd5eCurrency.js";
 
 export class Crafting implements CraftingData {
@@ -444,7 +444,7 @@ export class Crafting implements CraftingData {
             return [];
         }
         for (let x = 0; x < component.quantity; x++) {
-            const object = await table.roll();
+            const object = await (table as any).roll();
             for (const r of object.results) {
                 let uuid = r.documentCollection + "." + r.documentId;
                 if (r.documentCollection !== "Item") {
@@ -482,7 +482,7 @@ export function getCurrencyComponent(id:string, quantity:number): Component{
     const component = configCurrency?.component?configCurrency.component:new Component(
         {
             type:"Currency",
-            name:configCurrency?.label,
+            name:configCurrency?.label || id,
             img:'icons/commodities/currency/coins-assorted-mix-copper-silver-gold.webp'
         });
     component.quantity = quantity;

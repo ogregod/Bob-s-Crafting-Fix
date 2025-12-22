@@ -1,5 +1,6 @@
 import {Result} from "./Result.js";
 import {DialogSelect} from "./system/ui/DialogSelect.js";
+import {InitiatorData, TestResult, SerializedTest, Test, TestCustomized} from "./system/tests/Test.js";
 
 
 export class TestHandler{
@@ -90,7 +91,7 @@ export class TestHandler{
         return testAnd.ors[choice];
     }
 
-    getTest(serializedTest: SerializedTest<any>):Test<any>{
+    getTest(serializedTest: SerializedTest<any>):TestCustomized{
         const testClass = window.bobsCraftingSystem.getTest(serializedTest.type);
         if (!testClass) {
             throw new Error(`Test class not found: ${serializedTest.type}`);

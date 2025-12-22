@@ -1,6 +1,6 @@
 import { Recipe} from "./Recipe.js";
 import {Settings} from "./Settings.js";
-import {Component} from "./system/Component.js";
+import {Component, ComponentData} from "./system/Component.js";
 import {Dnd5eCurrency} from "./system/currency/Dnd5eCurrency.js";
 
 export class Result implements ResultApi, ResultData {
@@ -228,7 +228,7 @@ export class Result implements ResultApi, ResultData {
             this._components[type].addComponentResult(componentResult);
         }
         let userInteraction: UserInteraction = "never";
-        let quantity = componentData.quantity * -1;
+        let quantity = (componentData.quantity || 1) * -1;
         if (type === "produced") {
             userInteraction = "onSuccess";
             quantity = quantity * -1;

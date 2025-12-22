@@ -66,7 +66,7 @@ export class SheetIntegration {
 
         // Add content to tab
         if (content instanceof jQuery) {
-            tabContent.append(content);
+            tabContent.append(content as any);
         } else if (typeof content === 'string') {
             tabContent.html(content);
         } else {

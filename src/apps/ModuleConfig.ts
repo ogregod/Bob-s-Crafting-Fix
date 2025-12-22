@@ -1,5 +1,6 @@
 import {Settings} from "../Settings.js";
 import {getDataFrom} from "../helpers/Utility.js";
+import { ComponentData } from '../system/Component.js';
 
 const components:ComponentData[] = [];
 

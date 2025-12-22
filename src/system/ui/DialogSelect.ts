@@ -39,6 +39,7 @@ export class DialogSelect {
             // Create the dialog
             new Dialog({
                 title: options.title || "Select an Option",
+                content: "<p>Please select an option:</p>",
                 buttons: buttons,
                 default: Object.keys(options.choices)[0],
                 close: () => reject(new Error("Dialog closed without selection"))

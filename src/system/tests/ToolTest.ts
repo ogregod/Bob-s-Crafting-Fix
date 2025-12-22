@@ -43,7 +43,7 @@ class ToolTestCustomized implements TestCustomized {
     }
 
     async action(initiatorData: InitiatorData): Promise<TestResult> {
-        const actor = game.actors.get(initiatorData.actorId);
+        const actor = (game as any).actors?.get(initiatorData.actorId);
         if (!actor) {
             throw new Error("Actor not found for tool test");
         }

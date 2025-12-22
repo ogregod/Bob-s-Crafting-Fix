@@ -40,7 +40,7 @@ export class Dnd5eSystem {
     public configCanRollAbility: boolean = true;
 
     constructor() {
-        this.dnd5eVersion = game.system.version || "5.0.0";
+        this.dnd5eVersion = (game as any).system?.version || "5.0.0";
     }
 
     get majorVersion(): number {

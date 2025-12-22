@@ -1,3 +1,12 @@
+import { ComponentData } from './system/Component.js';
+import { Test, TestCustomized, TestResult, InitiatorData, SerializedTest } from './system/tests/Test.js';
+
+// Export types for use in other modules
+export { ComponentData, Test, TestCustomized, TestResult, InitiatorData, SerializedTest };
+
+// Declare all interfaces globally so they're available without imports
+declare global {
+
 interface ResultApi {
     hasError: ()=>boolean,
     addChatComponent: (componentChatData:ComponentChatData)=>void,
@@ -187,3 +196,36 @@ interface TestOr {
     type: TestType,
     uuid: string
 }
+
+// New test system types (replacing BSI types)
+interface BeaversTests {
+    ands: {
+        [key: number]: BeaversTestAnd
+    },
+    fails: number
+}
+
+interface BeaversTestAnd {
+    ors: {
+        [key: number]: SerializedTest<any>
+    },
+    hits: number
+}
+
+interface SelectData {
+    title?: string,
+    choices: {
+        [key: string]: {
+            text: string,
+            img?: string
+        }
+    }
+}
+
+// System definition for UI helpers
+interface System {
+    actorSheetAddTab?: (app: any, html: any, actor: Actor, tabConfig: any, content: any) => void,
+    itemSheetReplaceContent?: (app: any, html: any, element: string | HTMLElement) => void
+}
+
+} // End declare global

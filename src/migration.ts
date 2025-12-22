@@ -276,8 +276,10 @@ export function recipeSkillToTests(recipe: RecipeData) {
 export async function toolToAttendant(recipe: Recipe) {
     if (recipe.tool != undefined) {
         const item = await fromUuid(recipe.tool);
-        recipe.addRequired(item, item.uuid, "");
-        recipe.removeTool();
+        if (item) {
+            recipe.addRequired(item as any, (item as any).uuid, "");
+            recipe.removeTool();
+        }
     }
 }
 
