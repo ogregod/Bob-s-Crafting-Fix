@@ -2,6 +2,9 @@ import { Recipe } from "../Recipe.js";
 import { Settings } from "../Settings.js";
 import { getDataFrom } from "../helpers/Utility.js";
 import { AnyOf } from "../AnyOf.js";
+import {Component} from "../system/Component.js";
+import {Dnd5eCurrency} from "../system/currency/Dnd5eCurrency.js";
+import {SheetIntegration} from "../system/ui/SheetIntegration.js";
 
 const recipeSheets: { [key: string]: RecipeSheet } = {};
 
@@ -89,7 +92,7 @@ export class RecipeSheet {
     if (!this.app.form) {
       this.recipeElement = $("<form class=\"beavers-crafting\" style=\"height:100%;width:100%;padding:15px;\"></form>");
     }
-    beaversSystemInterface.itemSheetReplaceContent(this.app, html, this.recipeElement);
+    SheetIntegration.replaceContent(this.app, html, this.recipeElement);
     this.recipe = Recipe.fromItem(this.item);
     this.render().then(i => this.addDragDrop());
   }
@@ -123,12 +126,12 @@ export class RecipeSheet {
     let main = await renderTemplate("modules/bobs-crafting-guide/templates/recipe-main.hbs",
       {
         recipe: this.recipe,
-        currencies: beaversSystemInterface.configCurrencies,
+        currencies: Dnd5eCurrency.CURRENCIES,
         editable: this.editable,
         displayResults: Settings.get(Settings.DISPLAY_RESULTS),
         displayIngredients: Settings.get(Settings.DISPLAY_RESULTS),
         useAttendants: Settings.get(Settings.USE_ATTENDANTS),
-        canRollAbility: beaversSystemInterface.configCanRollAbility,
+        canRollAbility: true, // DnD 5e always supports ability rolls
         hasCraftedFlag: Settings.get(Settings.SEPARATE_CRAFTED_ITEMS) !== "none",
       });
     let description = "";
@@ -321,19 +324,19 @@ export class RecipeSheet {
     this.recipeElement.find(".results .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_RESULTS)) {
-        beaversSystemInterface.uuidToDocument(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => i.sheet.render(true));
       }
     });
     this.recipeElement.find(".ingredients .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-        beaversSystemInterface.uuidToDocument(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => i.sheet.render(true));
       }
     });
     this.recipeElement.find(".attendants .beavers-component .clickable").on("click", e => {
       const uuid = $(e.currentTarget).data("id");
       if (Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-        beaversSystemInterface.uuidToDocument(uuid).then(i => i.sheet.render(true));
+        fromUuid(uuid).then(i => i.sheet.render(true));
       }
     });
   }
@@ -359,7 +362,7 @@ export class RecipeSheet {
         if (isAnyOf && isOutput) {
           return;
         }
-        const component = beaversSystemInterface.componentFromEntity(entity);
+        const component = Component.fromEntity(entity);
         component.type = data.type;
         if (isInput) {
           let keyid = data.uuid;

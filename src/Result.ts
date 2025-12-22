@@ -1,5 +1,7 @@
 import { Recipe} from "./Recipe.js";
 import {Settings} from "./Settings.js";
+import {Component} from "./system/Component.js";
+import {Dnd5eCurrency} from "./system/currency/Dnd5eCurrency.js";
 
 export class Result implements ResultApi, ResultData {
     _actorUpdate: {
@@ -185,10 +187,10 @@ export class Result implements ResultApi, ResultData {
         }
         if(this._currencyResult.isConsumed) {
             const id = this._currencyResult.name;
-            const configCurrency = beaversSystemInterface.configCurrencies.find(c=>c.id===id);
+            const configCurrency = Dnd5eCurrency.CURRENCIES.find(c=>c.id===id);
             let name = configCurrency?.label || "";
             void await this._currencyResult.pay(this._actor, true);
-            const component = configCurrency?.component?configCurrency.component:beaversSystemInterface.componentCreate(
+            const component = configCurrency?.component?configCurrency.component:new Component(
                 {
                     type:"Currency",
                     name:name.replaceAll(".","-"),
@@ -218,8 +220,8 @@ export class Result implements ResultApi, ResultData {
         let componentResult = this._components[type].findComponentResult(componentData);
         if (componentResult === undefined) {
             componentResult = new ComponentResult();
-            const actorFindings = beaversSystemInterface.itemListComponentFind(this._actor.items,componentData);
-            componentResult.component = beaversSystemInterface.componentCreate(componentData);
+            const actorFindings = window.bobsCraftingSystem.dnd5e.itemListComponentFind(this._actor.items,componentData);
+            componentResult.component = new Component(componentData);
             componentResult.originalQuantity = actorFindings.quantity;
             componentResult.component.quantity = 0;
             componentResult.isProcessed = false;
@@ -309,7 +311,7 @@ export class ComponentResult implements ComponentResultData {
 
     static from(componentResultData: ComponentResultData): ComponentResult {
         const componentResult = new ComponentResult();
-        componentResult.component = beaversSystemInterface.componentCreate(componentResultData.component);
+        componentResult.component = new Component(componentResultData.component);
         componentResult.originalQuantity = componentResultData.originalQuantity;
         componentResult.userInteraction = componentResultData.userInteraction;
         componentResult.isProcessed = componentResultData.isProcessed;
@@ -373,7 +375,7 @@ export class CurrencyResult implements CurrencyResultData {
     async canPay(actor) {
         const currencies = {};
         currencies[this.name] = this.value*-1;
-        const canPay = await beaversSystemInterface.actorCurrenciesCanAdd(actor, currencies);
+        const canPay = await Dnd5eCurrency.actorCurrenciesCanAdd(actor, currencies);
         this.hasError = canPay;
         return canPay;
     }
@@ -386,7 +388,7 @@ export class CurrencyResult implements CurrencyResultData {
                 currencies[this.name] = currencies[this.name]*-1;
             }
             try {
-                await beaversSystemInterface.actorCurrenciesAdd(actor, currencies,Settings.get(Settings.CURRENCY_EXCHANGE));
+                await Dnd5eCurrency.actorCurrenciesAdd(actor, currencies,Settings.get(Settings.CURRENCY_EXCHANGE));
                 this.isConsumed = !revert;
             }catch (e){
                 console.error("Beavers Crafting | currency Error:", e);

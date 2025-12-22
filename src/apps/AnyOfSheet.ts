@@ -1,5 +1,6 @@
 import { AnyOf } from "../AnyOf.js";
 import { getDataFrom } from "../helpers/Utility.js";
+import {SheetIntegration} from "../system/ui/SheetIntegration.js";
 
 
 const anyOfSheets: { [key: string]: AnyOfSheet } = {};
@@ -47,7 +48,7 @@ export class AnyOfSheet {
             }
         }
         this.anyOfElement = $('<div class="beavers-crafting any-of" style="height:100%;width:100%;padding:15px;"></div>');
-        beaversSystemInterface.itemSheetReplaceContent(this.app,html,this.anyOfElement);
+        SheetIntegration.replaceContent(this.app,html,this.anyOfElement);
         this.render().then(()=>this.addDragDrop());
     }
 

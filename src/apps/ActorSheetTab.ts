@@ -2,6 +2,7 @@ import {CraftingApp} from "./CraftingApp.js";
 import {Crafting} from "../Crafting.js";
 import {Settings} from "../Settings.js";
 import { sortByFolder } from "../helpers/Folder.js";
+import {SheetIntegration} from "../system/ui/SheetIntegration.js";
 
 export class ActorSheetTab {
     app;
@@ -43,7 +44,7 @@ export class ActorSheetTab {
             {
                 folders:sortedFolders,
             }));
-        beaversSystemInterface.actorSheetAddTab(this.app, this.html, this.app.actor, { id: Settings.ACTOR_TAB_ID, label: label, html: `<i class="fas ${icon}"/>` }, tabBody);
+        SheetIntegration.addTab(this.app, this.html, this.app.actor, { id: Settings.ACTOR_TAB_ID, label: label, html: `<i class="fas ${icon}"/>` }, tabBody);
         this.activateListeners(tabBody);
     }
 

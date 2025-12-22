@@ -2,6 +2,8 @@ import {Recipe} from "../Recipe.js";
 import {Settings} from "../Settings.js";
 import {AnyOf} from "../AnyOf.js";
 import {Result} from "../Result.js";
+import {Component} from "../system/Component.js";
+import {DialogSelect} from "../system/ui/DialogSelect.js";
 
 export class RecipeCompendium {
 
@@ -43,7 +45,7 @@ export class RecipeCompendium {
             const listOfIngredientsWithoutAnyOf = this._filterData(recipe.input, component => component.type !== Settings.ANYOF_SUBTYPE);
             let countItems = 0;
             itemLoop: for (const item of items) {
-                const itemComponent = beaversSystemInterface.componentFromEntity(item);
+                const itemComponent = Component.fromEntity(item);
                 for (const component of listOfIngredientsWithoutAnyOf) {
                     if (component.isSame(itemComponent)) {
                         countItems++;
@@ -181,7 +183,7 @@ export class RecipeCompendium {
         for (const [key, component] of Object.entries(listOfComponents)) {
             selectData.choices[key] = {text: component.name, img: component.img};
         }
-        return beaversSystemInterface.uiDialogSelect(selectData);
+        return DialogSelect.show(selectData);
     }
 
     static validateRecipeToItemList(listOfIngredients: Component[], listOfItems, result: Result): Result {

@@ -7,6 +7,7 @@ import {Recipe} from "../Recipe.js";
 import {Result} from "../Result.js";
 import {TestHandler} from "../TestHandler.js";
 import { sortByFolder } from "../helpers/Folder.js";
+import {Component} from "../system/Component.js";
 
 export class CraftingApp extends Application {
     data: {
@@ -145,19 +146,19 @@ export class CraftingApp extends Application {
         html.find('.results .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_RESULTS)) {
-                beaversSystemInterface.uuidToDocument(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>i.sheet.render(true));
             }
         });
         html.find('.ingredients .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-                beaversSystemInterface.uuidToDocument(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>i.sheet.render(true));
             }
         });
         html.find('.attendants .clickable').on("click",e=>{
             const uuid = $(e.currentTarget).data("id");
             if(Settings.get(Settings.DISPLAY_INGREDIENTS)) {
-                beaversSystemInterface.uuidToDocument(uuid).then(i=>i.sheet.render(true));
+                fromUuid(uuid).then(i=>i.sheet.render(true));
             }
         });
         html.find(".main .folderName").on("click", (e)=>{
@@ -236,7 +237,7 @@ export class CraftingApp extends Application {
         if(uuid != undefined){
             const key = $(e.currentTarget).data("key");
             const group = $(e.currentTarget).data("group");
-            beaversSystemInterface.uuidToDocument(uuid).then(
+            fromUuid(uuid).then(
                 item => {
                     if(AnyOf.isAnyOf(item)){
                        return this._onDropAnyOf(new AnyOf(item),group, key,e);
@@ -259,7 +260,7 @@ export class CraftingApp extends Application {
             let result = await anyOf.executeMacro(entity);
             if(result.value) {
                 const previousComponent = this.data.recipe.input[group][key];
-                const component = beaversSystemInterface.componentFromEntity(entity);
+                const component = Component.fromEntity(entity);
                 const id = sanitizeUuid(data.uuid);
                 component.quantity = previousComponent.quantity;
                 this.data.recipe = Recipe.clone(this.data.recipe);

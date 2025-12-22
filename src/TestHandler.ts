@@ -1,4 +1,5 @@
 import {Result} from "./Result.js";
+import {DialogSelect} from "./system/ui/DialogSelect.js";
 
 
 export class TestHandler{
@@ -85,12 +86,16 @@ export class TestHandler{
         for(const [id,or] of  Object.entries(testAnd.ors)){
             choices[id] = {text:this.getTest(or).render()}
         }
-        const choice = parseInt(await beaversSystemInterface.uiDialogSelect({choices:choices}));
+        const choice = parseInt(await DialogSelect.show({choices:choices}));
         return testAnd.ors[choice];
     }
 
     getTest(serializedTest: SerializedTest<any>):Test<any>{
-        return beaversSystemInterface.testClasses[serializedTest.type].create(serializedTest.data)
+        const testClass = window.bobsCraftingSystem.getTest(serializedTest.type);
+        if (!testClass) {
+            throw new Error(`Test class not found: ${serializedTest.type}`);
+        }
+        return testClass.create(serializedTest.data)
     }
 
 }

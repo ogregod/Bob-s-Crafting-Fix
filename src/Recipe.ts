@@ -2,6 +2,7 @@ import {Settings} from "./Settings.js";
 import {sanitizeUuid} from "./helpers/Utility.js";
 import {Result} from "./Result.js";
 import { recipeSkillToTests, recipeTestsToBeaversTests } from "./migration.js";
+import {Component} from "./system/Component.js";
 
 export class Recipe implements RecipeData {
     uuid: string;
@@ -61,7 +62,7 @@ export class Recipe implements RecipeData {
 
     static isRecipe(item) {
         // @ts-ignore
-        return (item?.type === beaversSystemInterface.configLootItemType && (
+        return (item?.type === "loot" && ( // DnD 5e loot item type
                 item?.system?.source === Settings.RECIPE_SUBTYPE ||
                 foundry.utils.getProperty(item, `flags.${Settings.NAMESPACE}.subtype`) === Settings.RECIPE_SUBTYPE
             )
@@ -89,7 +90,7 @@ export class Recipe implements RecipeData {
                         result[key] = {};
                     }
                     const component = map2[key2];
-                    result[key][key2] = beaversSystemInterface.componentCreate(component);
+                    result[key][key2] = new Component(component);
                 }
             }
             return result;
@@ -102,7 +103,7 @@ export class Recipe implements RecipeData {
             for (const key in map) {
                 group++;
                 hasResult = true;
-                result[group] = {key: beaversSystemInterface.componentCreate(map[key])};
+                result[group] = {key: new Component(map[key])};
             }
             if (hasResult) {
                 return result;

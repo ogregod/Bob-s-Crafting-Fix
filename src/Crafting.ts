@@ -3,6 +3,8 @@ import {Settings} from "./Settings.js";
 import {RecipeCompendium} from "./apps/RecipeCompendium.js";
 import {Result} from "./Result.js";
 import {TestHandler} from "./TestHandler.js";
+import {Component} from "./system/Component.js";
+import {Dnd5eCurrency} from "./system/currency/Dnd5eCurrency.js";
 
 export class Crafting implements CraftingData {
     uuid: string;
@@ -199,19 +201,19 @@ export class Crafting implements CraftingData {
         this.actor = await fromUuid(this.actor.uuid); //refresh Actor
         const componentList: Component[] = [];
         for (const componentResult of this.result._components.required._data) {
-            const component = beaversSystemInterface.componentCreate(componentResult.component);
+            const component = new Component(componentResult.component);
             if (componentResult.userInteraction === "always") {
                 componentList.push(component);
             }
         }
         for (const componentResult of this.result._components.consumed._data) {
-            const component = beaversSystemInterface.componentCreate(componentResult.component);
+            const component = new Component(componentResult.component);
             if (componentResult.userInteraction === "always") {
                 componentList.push(component);
             }
         }
         try{
-            const itemChange = await beaversSystemInterface.actorComponentListAdd(this.actor,componentList);
+            const itemChange = await window.bobsCraftingSystem.dnd5e.actorComponentListAdd(this.actor,componentList);
             this.restore = itemChange.delete;
         }catch(e){
             // @ts-ignore
@@ -235,7 +237,7 @@ export class Crafting implements CraftingData {
     private _processComponentResult(componentResults: ComponentResultsData):Component[]{
         const componentList:Component[] = [];
         for (const componentResult of componentResults._data) {
-            let component = beaversSystemInterface.componentCreate(componentResult.component);
+            let component = new Component(componentResult.component);
             if (componentResult.userInteraction === "always" || (componentResult.userInteraction === "onSuccess" && !this.result.hasError())) {
                 if (!componentResult.isProcessed){
                     componentList.push(component);
@@ -246,7 +248,7 @@ export class Crafting implements CraftingData {
                     this.restore.forEach(r=>{
                         if(component.isSame(r)){
                             r.quantity = component.quantity;
-                            component = beaversSystemInterface.componentCreate(r);
+                            component = new Component(r);
                         }
                     })
                     componentList.push(component);
@@ -273,7 +275,7 @@ export class Crafting implements CraftingData {
             }
         }
         try{
-            const itemChange = await beaversSystemInterface.actorComponentListAdd(this.actor,componentList);
+            const itemChange = await window.bobsCraftingSystem.dnd5e.actorComponentListAdd(this.actor,componentList);
             if(!this.result.hasError()){
                 await this.actor.update(this.result._actorUpdate);
             }
@@ -433,7 +435,7 @@ export class Crafting implements CraftingData {
     }
 
     async _rollTableToComponents(component: Component, result: Result) {
-        const table = await beaversSystemInterface.uuidToDocument(component.uuid);
+        const table = await fromUuid(component.uuid);
         let components: Component[] = [];
         if (!table) {
             // @ts-ignore
@@ -455,14 +457,14 @@ export class Crafting implements CraftingData {
                     }
                     uuid = "Compendium." + uuid;
                 }
-                const item = await beaversSystemInterface.uuidToDocument(uuid)
+                const item = await fromUuid(uuid)
                 if (!item) {
                     // @ts-ignore
                     ui.notifications.error(game.i18n.localize(`beaversCrafting.crafting-app.errors.tableItemNotFound`) + r.name);
                     result._hasException = true;
                     return [];
                 }
-                components.push(beaversSystemInterface.componentFromEntity(item));
+                components.push(Component.fromEntity(item));
             }
         }
         return components;
@@ -476,8 +478,8 @@ export class Crafting implements CraftingData {
 }
 
 export function getCurrencyComponent(id:string, quantity:number): Component{
-    const configCurrency = beaversSystemInterface.configCurrencies.find(c=>c.id===id);
-    const component = configCurrency?.component?configCurrency.component:beaversSystemInterface.componentCreate(
+    const configCurrency = Dnd5eCurrency.CURRENCIES.find(c=>c.id===id);
+    const component = configCurrency?.component?configCurrency.component:new Component(
         {
             type:"Currency",
             name:configCurrency?.label,

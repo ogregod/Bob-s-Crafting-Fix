@@ -185,7 +185,7 @@ export function recipeTestsToBeaversTests(recipe: RecipeData) {
             recipe.beaversTests.ands[key] = {ors:{},hits:recipe.tests.ands[key].hits} as BeaversTestAnd
             for (let orKey in recipe.tests.ands[key].ors) {
                 if(recipe.tests.ands[key].ors[orKey].type === "skill") {
-                    if(!beaversSystemInterface.testClasses["SkillTest"]) {
+                    if(!window.bobsCraftingSystem.hasTest("SkillTest")) {
                         ui.notifications?.error("can't migrate recipe. Missing SkillTest plz upgrade your bsa-x");
                         throw Error("can't migrate recipe. Missing SkillTest plz upgrade your bsa-x");
                     }
@@ -199,7 +199,7 @@ export function recipeTestsToBeaversTests(recipe: RecipeData) {
 
                 }
                 if(recipe.tests.ands[key].ors[orKey].type === "ability") {
-                    if(!beaversSystemInterface.testClasses["AbilityTest"]) {
+                    if(!window.bobsCraftingSystem.hasTest("AbilityTest")) {
                         ui.notifications?.error("can't migrate recipe. Missing AbilityTest plz upgrade your bsa-x");
                         throw Error("can't migrate recipe. Missing AbilityTest plz upgrade your bsa-x");
                     }
@@ -212,7 +212,7 @@ export function recipeTestsToBeaversTests(recipe: RecipeData) {
                     }
                 }
                 if(recipe.tests.ands[key].ors[orKey].type === "hit") {
-                    if(!beaversSystemInterface.testClasses["IncrementStep"]) {
+                    if(!window.bobsCraftingSystem.hasTest("IncrementStep")) {
                         ui.notifications?.error("can't migrate recipe. Missing IncrementStep plz upgrade your bsa-x");
                         throw Error("can't migrate recipe. Missing IncrementStep plz upgrade your bsa-x");
                     }
@@ -224,7 +224,7 @@ export function recipeTestsToBeaversTests(recipe: RecipeData) {
                     }
                 }
                 if(recipe.tests.ands[key].ors[orKey].type === "tool") {
-                    if(!beaversSystemInterface.testClasses["ToolTest"]) {
+                    if(!window.bobsCraftingSystem.hasTest("ToolTest")) {
                         ui.notifications?.error("can't migrate recipe. Missing ToolTest plz upgrade your bsa-x");
                         throw Error("can't migrate recipe. Missing ToolTest plz upgrade your bsa-x");
                     }
@@ -275,7 +275,7 @@ export function recipeSkillToTests(recipe: RecipeData) {
 
 export async function toolToAttendant(recipe: Recipe) {
     if (recipe.tool != undefined) {
-        const item = await beaversSystemInterface.uuidToDocument(recipe.tool);
+        const item = await fromUuid(recipe.tool);
         recipe.addRequired(item, item.uuid, "");
         recipe.removeTool();
     }

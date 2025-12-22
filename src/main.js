@@ -17,14 +17,34 @@ import {CraftedItemSheet} from "./apps/CraftedItemSheet.js";
 import "./compatibility/tidy5e.js";
 import { hookChatLog } from "./apps/ChatLog.js";
 
-Hooks.on("beavers-system-interface.init", async function(){
-    beaversSystemInterface.addModule(Settings.NAMESPACE);
-});
-Hooks.on("ready", async function(){
-    if(window.beaversSystemInterface === undefined){
-        ui.notifications.error("Beavers Crafting | missing module Beavers System Interface", {permanent:true});
+// Import standalone system
+import { BobsCraftingSystem } from './system/SystemApi.js';
+import { SkillTest } from './system/tests/SkillTest.js';
+import { AbilityTest } from './system/tests/AbilityTest.js';
+import { ToolTest } from './system/tests/ToolTest.js';
+import { IncrementStep } from './system/tests/IncrementStep.js';
+
+// Initialize system on Foundry init
+Hooks.once("init", async function(){
+    console.log("Bob's Crafting Guide | Initializing standalone system");
+
+    // Verify DnD 5e system
+    if (game.system.id !== "dnd5e") {
+        ui.notifications.error("Bob's Crafting Guide requires the DnD 5e system", {permanent: true});
+        return;
     }
-})
+
+    // Create system singleton
+    window.bobsCraftingSystem = BobsCraftingSystem.getInstance();
+
+    // Register test classes
+    window.bobsCraftingSystem.registerTest('SkillTest', SkillTest);
+    window.bobsCraftingSystem.registerTest('AbilityTest', AbilityTest);
+    window.bobsCraftingSystem.registerTest('ToolTest', ToolTest);
+    window.bobsCraftingSystem.registerTest('IncrementStep', IncrementStep);
+
+    console.log("Bob's Crafting Guide | System initialized");
+});
 
 async function migrate(){
     const version = Settings.get(Settings.MAJOR_VERSION);
@@ -61,7 +81,16 @@ function debug(){
     };
 }
 
-Hooks.once("beavers-system-interface.ready", async function(){
+Hooks.once("ready", async function(){
+    // Verify DnD 5e version
+    const version = game.system.version;
+    const major = parseInt(version.split('.')[0]);
+    const minor = parseInt(version.split('.')[1]);
+
+    if (major < 5 || (major === 5 && minor < 2)) {
+        ui.notifications.warn(`Bob's Crafting Guide is designed for DnD 5e 5.2.4, you are running ${version}. Some features may not work correctly.`, {permanent: true});
+    }
+
     Settings.init();
     if(!game[Settings.NAMESPACE])game[Settings.NAMESPACE]={};
     game[Settings.NAMESPACE].Crafting = Crafting;
@@ -75,22 +104,9 @@ Hooks.once("beavers-system-interface.ready", async function(){
     game[Settings.NAMESPACE].migrateRecipeTestsToBeaversTests= migrateRecipeTestsToBeaversTests;
     hookChatLog();
     migrate();
-    beaversSystemInterface.addExtension(Settings.NAMESPACE,{componentAddFlags:["crafted","isCrafted"]})
 
-    if(Settings.get(Settings.SEPARATE_CRAFTED_ITEMS) === "full"){
-        beaversSystemInterface.addExtension(Settings.NAMESPACE,{componentIsSame:(a,b,previousResult)=>{
-            const aHasFlag = foundry.utils.getProperty(a,`flags.${Settings.NAMESPACE}.isCrafted`);
-            const bHasFlag = foundry.utils.getProperty(b,`flags.${Settings.NAMESPACE}.isCrafted`);
-            return previousResult && aHasFlag === bHasFlag
-            }})
-    }
-    if(Settings.get(Settings.SEPARATE_CRAFTED_ITEMS) === "partial"){
-        beaversSystemInterface.addExtension(Settings.NAMESPACE,{componentIsSame:(a,b,previousResult)=>{
-                const aHasFlag = foundry.utils.getProperty(a,`flags.${Settings.NAMESPACE}.isCrafted`);
-                const bHasFlag = foundry.utils.getProperty(b,`flags.${Settings.NAMESPACE}.isCrafted`);
-                return previousResult && (!aHasFlag || aHasFlag === bHasFlag)
-            }})
-    }
+    // Note: Component comparison logic with crafted items is now handled directly in Component.ts
+    // The isSame() method checks Settings.SEPARATE_CRAFTED_ITEMS automatically
 
     Hooks.on("renderActorSheet", (app, html, data)=>{
         if (app instanceof Application) {
@@ -201,7 +217,7 @@ Hooks.once("beavers-system-interface.ready", async function(){
     });
 
     function legacy(html){
-        const itemType = beaversSystemInterface.configLootItemType;
+        const itemType = "loot"; // DnD 5e loot item type
 
         html.find("select[name='type']").append("<option value='"+itemType+"'>📜Recipe📜</option>");
         html.find("select[name='type']").append("<option value='"+itemType+"'>❔AnyOf❔</option>");
@@ -231,7 +247,7 @@ Hooks.once("beavers-system-interface.ready", async function(){
     }
     //temp quickwin
     function dnd5e(html){
-        const itemType = beaversSystemInterface.configLootItemType;
+        const itemType = "loot"; // DnD 5e loot item type
         html.find("ol.card").append(`<li>
             <label>
                 <img src="icons/sundries/scrolls/scroll-worn-tan.webp" alt="Recipe">

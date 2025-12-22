@@ -1,5 +1,6 @@
 import {Settings} from "./Settings.js";
 import {RecipeCompendium} from "./apps/RecipeCompendium.js";
+import {Component} from "./system/Component.js";
 
 export class AnyOf {
     macro;
@@ -10,7 +11,7 @@ export class AnyOf {
     static isAnyOf(item) {
         // @ts-ignore
         return (
-            item?.type === beaversSystemInterface.configLootItemType && (
+            item?.type === "loot" && ( // DnD 5e loot item type
                 item?.system?.source === Settings.ANYOF_SUBTYPE ||
                 foundry.utils.getProperty(item,`flags.${Settings.NAMESPACE}.subtype`) === Settings.ANYOF_SUBTYPE
             )
@@ -61,7 +62,7 @@ export class AnyOf {
         const resultList:Component[] = [];
         for(const item of itemList){
             const result = await this.executeMacro(item);
-            const componentItem = beaversSystemInterface.componentFromEntity(item);
+            const componentItem = Component.fromEntity(item);
             if(result.value){
                 const same = resultList.filter(component => component.isSame(componentItem))
                 if(same.length > 0){
