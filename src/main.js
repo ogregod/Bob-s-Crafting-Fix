@@ -328,9 +328,10 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
         testData.data = {};
     }
 
-    const disabled = options.hash.disabled || false;
-    const minimized = options.hash.minimized || false;
-    const prefixName = options.hash.prefixName || '';
+    // Check if options exists before accessing hash
+    const disabled = options?.hash?.disabled || false;
+    const minimized = options?.hash?.minimized || false;
+    const prefixName = options?.hash?.prefixName || '';
 
     // Get available test types
     const testTypes = [
