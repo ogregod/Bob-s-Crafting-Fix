@@ -317,8 +317,15 @@ Handlebars.registerHelper('beavers-object', function(...args) {
 
 // Helper to render test UI based on test type
 Handlebars.registerHelper('beavers-test', function(testData, options) {
-    if (!testData || !testData.type) {
-        return new Handlebars.SafeString('<div class="error">No test type specified</div>');
+    // Initialize with default if no test data
+    if (!testData) {
+        testData = { type: 'SkillTest', data: {} };
+    }
+    if (!testData.type) {
+        testData.type = 'SkillTest';
+    }
+    if (!testData.data) {
+        testData.data = {};
     }
 
     const disabled = options.hash.disabled || false;
@@ -333,38 +340,38 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
         { value: 'IncrementStep', label: game.i18n.localize('beaversCrafting.test.increment') || 'Auto Progress' }
     ];
 
-    let html = '<div class="beavers-test flexrow">';
+    let html = '<div class="beavers-test flexrow" style="align-items: center; gap: 5px;">';
 
     // Test type selection
-    html += '<select class="beavers-test-selection" name="' + prefixName + '.type"' + (disabled ? ' disabled' : '') + '>';
+    html += '<select class="beavers-test-selection" name="' + prefixName + '.type"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto;">';
     for (const type of testTypes) {
         html += '<option value="' + type.value + '"' + (testData.type === type.value ? ' selected' : '') + '>' + type.label + '</option>';
     }
     html += '</select>';
 
-    // Test-specific configuration
-    if (!minimized && testData.data) {
+    // Test-specific configuration - always show, not just when testData.data exists
+    if (!minimized) {
         if (testData.type === 'SkillTest') {
             const skills = CONFIG.DND5E.skills || {};
-            html += '<select name="' + prefixName + '.data.skill"' + (disabled ? ' disabled' : '') + '>';
+            html += '<select name="' + prefixName + '.data.skill"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto;">';
             for (const [key, skill] of Object.entries(skills)) {
                 html += '<option value="' + key + '"' + (testData.data.skill === key ? ' selected' : '') + '>' + (skill.label || key) + '</option>';
             }
             html += '</select>';
-            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+            html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'AbilityTest') {
             const abilities = CONFIG.DND5E.abilities || {};
-            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + '>';
+            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto;">';
             for (const [key, ability] of Object.entries(abilities)) {
                 html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + (ability.label || key) + '</option>';
             }
             html += '</select>';
-            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+            html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'ToolTest') {
-            html += '<label>Tool:</label><input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="Tool name or UUID"' + (disabled ? ' disabled' : '') + ' style="flex:1" />';
-            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+            html += '<label style="margin-left: 5px;">Tool:</label><input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="e.g., Cook\'s Utensils"' + (disabled ? ' disabled' : '') + ' style="flex:1; min-width: 150px;" />';
+            html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'IncrementStep') {
-            html += '<span style="margin-left:10px">Auto-progress (no roll required)</span>';
+            html += '<span style="margin-left:10px; font-style: italic;">Auto-progress (no roll required)</span>';
         }
     }
 

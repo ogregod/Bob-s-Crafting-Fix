@@ -49,9 +49,16 @@ export class SheetIntegration {
             return;
         }
 
-        // Add tab button
-        const tabButton = `<a class="item" data-tab="${tabConfig.id}">${tabConfig.html} ${tabConfig.label}</a>`;
-        nav.append(tabButton);
+        // Check if tab already exists
+        const existingTabButton = nav.find(`a[data-tab="${tabConfig.id}"]`);
+        const existingTabContent = html.find(`.tab[data-tab="${tabConfig.id}"]`);
+
+        // If tab doesn't exist, create it
+        if (!existingTabButton.length) {
+            // Add tab button
+            const tabButton = `<a class="item" data-tab="${tabConfig.id}">${tabConfig.html} ${tabConfig.label}</a>`;
+            nav.append(tabButton);
+        }
 
         // Find sheet body
         const body = html.find('.sheet-body, .window-content');
@@ -60,9 +67,16 @@ export class SheetIntegration {
             return;
         }
 
-        // Add tab content container
-        const tabContent = $(`<div class="tab" data-group="primary" data-tab="${tabConfig.id}"></div>`);
-        body.append(tabContent);
+        let tabContent: JQuery;
+        if (existingTabContent.length) {
+            // Tab exists, just update content
+            tabContent = existingTabContent;
+            tabContent.empty();
+        } else {
+            // Create new tab content container with scrollable wrapper
+            tabContent = $(`<div class="tab" data-group="primary" data-tab="${tabConfig.id}" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; padding: 10px;"></div>`);
+            body.append(tabContent);
+        }
 
         // Add content to tab
         if (content instanceof jQuery) {
@@ -93,15 +107,20 @@ export class SheetIntegration {
             return;
         }
 
-        // Create tab button
-        const tabButton = document.createElement('button');
-        tabButton.type = 'button';
-        tabButton.className = 'item';
-        tabButton.dataset.tab = tabConfig.id;
-        tabButton.dataset.group = 'primary';
-        tabButton.innerHTML = `${tabConfig.html} ${tabConfig.label}`;
+        // Check if tab button already exists
+        const existingTabButton = tabsElement.querySelector(`button[data-tab="${tabConfig.id}"]`);
 
-        tabsElement.appendChild(tabButton);
+        if (!existingTabButton) {
+            // Create tab button
+            const tabButton = document.createElement('button');
+            tabButton.type = 'button';
+            tabButton.className = 'item';
+            tabButton.dataset.tab = tabConfig.id;
+            tabButton.dataset.group = 'primary';
+            tabButton.innerHTML = `${tabConfig.html} ${tabConfig.label}`;
+
+            tabsElement.appendChild(tabButton);
+        }
 
         // Find content area
         const contentArea = element.querySelector('.window-content, .sheet-body');
@@ -110,11 +129,25 @@ export class SheetIntegration {
             return;
         }
 
-        // Create tab content section
-        const tabContent = document.createElement('section');
-        tabContent.className = 'tab';
-        tabContent.dataset.tab = tabConfig.id;
-        tabContent.dataset.group = 'primary';
+        // Check if tab content already exists
+        let tabContent = contentArea.querySelector(`section[data-tab="${tabConfig.id}"]`) as HTMLElement;
+
+        if (tabContent) {
+            // Tab exists, just update content
+            tabContent.innerHTML = '';
+        } else {
+            // Create tab content section with scrollable wrapper
+            tabContent = document.createElement('section');
+            tabContent.className = 'tab';
+            tabContent.dataset.tab = tabConfig.id;
+            tabContent.dataset.group = 'primary';
+            tabContent.style.maxHeight = '600px';
+            tabContent.style.overflowY = 'auto';
+            tabContent.style.overflowX = 'hidden';
+            tabContent.style.padding = '10px';
+
+            contentArea.appendChild(tabContent);
+        }
 
         // Add content
         if (content instanceof jQuery) {
@@ -126,8 +159,6 @@ export class SheetIntegration {
         } else {
             tabContent.appendChild(content);
         }
-
-        contentArea.appendChild(tabContent);
     }
 
     /**
