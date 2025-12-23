@@ -308,10 +308,11 @@ export class Dnd5eSystem {
      * @returns True if they match
      */
     private isSameItem(item: any, component: ComponentData): boolean {
-        if (component.uuid && item.uuid) {
-            return item.uuid === component.uuid;
+        // If UUIDs match, they're the same item
+        if (component.uuid && item.uuid && component.uuid === item.uuid) {
+            return true;
         }
-        // Fallback to name+type comparison
+        // Fallback to name+type comparison (works even if UUIDs don't match)
         return item.name === component.name && item.type === component.type;
     }
 

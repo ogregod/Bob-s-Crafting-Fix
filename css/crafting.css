@@ -857,6 +857,138 @@ actor-sheet
     border: 1px solid var(--beavers-actor-border-color);
 }
 
+/* Modern container styling for actor tab */
+.beavers-crafting.actor-tab .crafting-tab-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: calc(100vh - 200px);
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--beavers-actor-border-color);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.beavers-crafting.actor-tab .crafting-tab-header {
+    flex: 0 0 auto;
+    background: var(--beavers-actor-background-color-highlight);
+    border-bottom: 2px solid var(--beavers-actor-border-color);
+    padding: 0;
+    margin: 0;
+}
+
+.beavers-crafting.actor-tab .crafting-tab-header .header {
+    margin: 0;
+    border: none;
+    border-radius: 6px 6px 0 0;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+
+.beavers-crafting.actor-tab .crafting-tab-content {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--beavers-actor-background-color);
+}
+
+.beavers-crafting.actor-tab .add-recipe-section {
+    flex: 0 0 auto;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--beavers-actor-border-color);
+    margin: 0;
+}
+
+.beavers-crafting.actor-tab .add-recipe-section .addCrafting {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: var(--beavers-actor-background-color-highlight);
+    border: 1px solid var(--beavers-actor-border-color);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.beavers-crafting.actor-tab .add-recipe-section .addCrafting:hover {
+    background: var(--beavers-actor-background-color);
+    box-shadow: 0 0 8px var(--beavers-actor-background-color-highlight);
+    transform: translateY(-1px);
+}
+
+.beavers-crafting.actor-tab .add-recipe-section .crafting-rollIcon {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.beavers-crafting.actor-tab .add-recipe-section .crafting-rollIcon i {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+}
+
+.beavers-crafting.actor-tab .add-recipe-section .addCrafting:hover .crafting-rollIcon i {
+    transform: scale(1.1);
+}
+
+.beavers-crafting.actor-tab .crafting-list-scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px;
+    min-height: 200px;
+}
+
+/* Custom scrollbar for crafting list */
+.beavers-crafting.actor-tab .crafting-list-scroll::-webkit-scrollbar {
+    width: 10px;
+}
+
+.beavers-crafting.actor-tab .crafting-list-scroll::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+}
+
+.beavers-crafting.actor-tab .crafting-list-scroll::-webkit-scrollbar-thumb {
+    background: var(--beavers-actor-border-color);
+    border-radius: 5px;
+    transition: background 0.2s ease;
+}
+
+.beavers-crafting.actor-tab .crafting-list-scroll::-webkit-scrollbar-thumb:hover {
+    background: var(--beavers-actor-color-highlight);
+}
+
+/* Standard scrollbar for Firefox */
+.beavers-crafting.actor-tab .crafting-list-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: var(--beavers-actor-border-color) rgba(0, 0, 0, 0.1);
+}
+
+/* Improve spacing for items in the list */
+.beavers-crafting.actor-tab .crafting-list-scroll .beavers-crafting-item {
+    margin-bottom: 6px;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--beavers-actor-border-color);
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.beavers-crafting.actor-tab .crafting-list-scroll .beavers-crafting-item:hover {
+    background: rgba(255, 255, 255, 0.03);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateX(2px);
+}
+
+/* Separator styling */
+.beavers-crafting.actor-tab .crafting-tab-content > .beavers-seperator {
+    margin: 0;
+    border-bottom: 2px solid var(--beavers-actor-border-color);
+    flex: 0 0 auto;
+}
+
 
 
 

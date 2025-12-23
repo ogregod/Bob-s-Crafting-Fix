@@ -1,28 +1,31 @@
-<div class="beavers-crafting actor-tab" style="overflow:auto">
+<div class="beavers-crafting actor-tab">
+  <div class="crafting-tab-container">
+    <div class="crafting-tab-header">
+      <h3 class="flexrow header beavers-line">
+        <div class="scale">{{localize "beaversCrafting.actorSheet.table.name"}}</div>
+        <div class="attribute" style="min-width:150px;text-align:center;">{{localize "beaversCrafting.actorSheet.table.progress"}}</div>
+        <div class="attribute" style="min-width:100px;text-align:center">{{localize "beaversCrafting.actorSheet.table.status"}}</div>
+        <div class="attribute" style="min-width:50px"></div>
+      </h3>
+    </div>
 
-  <div class="flexcol" style="min-width:470px;">
-    <h3 class="flexrow header beavers-line">
-      <div class="scale">{{localize
-        "beaversCrafting.actorSheet.table.name"}}</div>
-      <div class="attribute" style="min-width:150px;text-align:center;">{{localize
-        "beaversCrafting.actorSheet.table.progress"}}</div>
-      <div class="attribute" style="min-width:100px;text-align:center">{{localize
-        "beaversCrafting.actorSheet.table.status"}}</div>
-      <div class="attribute" style="min-width:50px">
-        <!--a class="addCrafting"><i class="fa-solid fa-circle-plus"></i></a-->
+    <div class="crafting-tab-content">
+      <div class="beavers-crafting-item add-recipe-section">
+        <div class="flexrow beavers-line" style="padding:8px 10px;line-height:24px;text-align:right">
+          <a class="addCrafting">
+            <div class="crafting-rollIcon">
+              <i class="fa-solid fa-circle-plus"></i>
+              <span>{{localize "beaversCrafting.actorSheet.table.add" }}</span>
+            </div>
+          </a>
+        </div>
       </div>
-    </h3>
-    <div class="beavers-crafting-item">
-      <div class="flexrow beavers-line" style="padding:2px 5px;line-height:24px;text-align:right">
-        <a class="addCrafting">
-          <div class="crafting-rollIcon">
-            <i class="fa-solid fa-circle-plus"></i>
-            <span>{{localize "beaversCrafting.actorSheet.table.add" }}</span>
-          </div>
-        </a>
+
+      <div class="beavers-seperator"></div>
+
+      <div class="crafting-list-scroll">
+        {{>beavers-folders renderTemplate="beavers-actor-folder-item"}}
       </div>
     </div>
   </div>
-  <div class="beavers-seperator"></div>
-    {{>beavers-folders renderTemplate="beavers-actor-folder-item"}}
 </div>
