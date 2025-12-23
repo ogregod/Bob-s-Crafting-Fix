@@ -104,15 +104,46 @@
 
 .beavers-crafting.crafting-app {
     color: var(--beavers-color);
+    /* Add modern shadow for depth */
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3),
+                0 2px 8px rgba(0, 0, 0, 0.2);
+    /* Subtle border for definition */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    /* Smooth rounded corners */
+    border-radius: 8px;
+    /* Prevent content from bleeding into rounded corners */
+    overflow: hidden;
+    /* Viewport constraints */
+    max-width: 90vw;
+    max-height: 90vh;
+    min-width: 560px;
+    /* Smooth transitions */
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.beavers-crafting.crafting-app:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35),
+                0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .beavers-crafting.crafting-app .window-content {
-    overflow-y:hidden;
-    height:100%;
+    overflow-y: hidden;
+    height: 100%;
+    position: relative;
 }
 
-.beavers-crafting.crafting-app{
-    min-width:560px;
+/* Enhanced window header */
+.beavers-crafting.crafting-app .window-header {
+    background: linear-gradient(to bottom,
+                rgba(255, 255, 255, 0.05),
+                rgba(0, 0, 0, 0.05));
+    border-bottom: 2px solid var(--beavers-border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.beavers-crafting.crafting-app .window-title {
+    font-weight: 600;
+    letter-spacing: 0.5px;
 }
 
 .beavers-crafting.crafting-app .compendium.header{
@@ -397,31 +428,122 @@ beaver-recipe-test
     width: 200px;
     border-right: 2px groove var(--beavers-border-color);
     font-size: var(--font-size-12);
+    /* Add subtle background differentiation */
+    background: rgba(0, 0, 0, 0.02);
+    /* Improve visual hierarchy */
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05);
 }
+
 .beavers-crafting.crafting-app .sidebar .content{
     overflow-y: auto;
     border-top: 2px groove var(--beavers-border-color);
     margin-top: 2px;
+    /* Better scrollbar styling (webkit browsers) */
+    scrollbar-width: thin;
+    scrollbar-color: var(--beavers-border-color) transparent;
+}
+
+.beavers-crafting.crafting-app .sidebar .content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.beavers-crafting.crafting-app .sidebar .content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+}
+
+.beavers-crafting.crafting-app .sidebar .content::-webkit-scrollbar-thumb {
+    background: var(--beavers-border-color);
+    border-radius: 4px;
+}
+
+.beavers-crafting.crafting-app .sidebar .content::-webkit-scrollbar-thumb:hover {
+    background: var(--beavers-color);
 }
 
 .beavers-crafting.crafting-app .sheet-body {
-    height:100%;
+    height: 100%;
+    /* Add padding for breathing room */
+    padding: 8px;
+    /* Ensure proper overflow handling */
+    overflow: hidden;
 }
 
 .beavers-crafting.crafting-app .sheet-body .beavers-recipe{
     overflow-y: auto;
     border-top: 2px groove var(--beavers-border-color);
     margin-top: 2px;
-    height:calc( 100% - 64px );
+    height: calc(100% - 64px);
+    /* Add padding for content */
+    padding: 8px;
+    /* Better scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--beavers-border-color) transparent;
+}
+
+.beavers-crafting.crafting-app .sheet-body .beavers-recipe::-webkit-scrollbar {
+    width: 10px;
+}
+
+.beavers-crafting.crafting-app .sheet-body .beavers-recipe::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    margin: 4px;
+}
+
+.beavers-crafting.crafting-app .sheet-body .beavers-recipe::-webkit-scrollbar-thumb {
+    background: var(--beavers-border-color);
+    border-radius: 5px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.beavers-crafting.crafting-app .sheet-body .beavers-recipe::-webkit-scrollbar-thumb:hover {
+    background: var(--beavers-color);
+    background-clip: padding-box;
 }
 
 .beavers-crafting.crafting-app .beavers-crafting-header .beavers-component {
     line-height: 34px;
     height: 34px;
-    max-height:34px;
+    max-height: 34px;
     font-size: 16px;
     font-family: "Modesto Condensed", "Palatino Linotype", serif;
+    /* Add subtle background and border */
+    background: rgba(0, 0, 0, 0.03);
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--beavers-border-color);
+    margin-bottom: 8px;
 }
+
+/* Smooth recipe item hover effects */
+.beavers-crafting .beavers-folder .beavers-folder-item {
+    transition: background 0.15s ease-in-out;
+}
+
+.beavers-crafting .beavers-folder .beavers-folder-item:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Button improvements */
+.beavers-crafting .dialog-button {
+    transition: all 0.2s ease-in-out;
+    border-radius: 4px;
+    padding: 6px 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.beavers-crafting .dialog-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.beavers-crafting .dialog-button:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
 /****************
 beaver-folder
  ****************/

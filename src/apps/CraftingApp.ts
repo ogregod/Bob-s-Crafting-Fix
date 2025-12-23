@@ -27,6 +27,8 @@ export class CraftingApp extends Application {
         result?:Result,
     };
 
+    private _hasBeenCentered: boolean = false;
+
     constructor(actor, options: any = {}) {
         super(options);
         this.data = {
@@ -36,6 +38,7 @@ export class CraftingApp extends Application {
             filterItems: {},
             folders: {},
         };
+        this._hasBeenCentered = false;
         if(this.element.length > 0){
             this.bringToTop();
         }
@@ -47,12 +50,56 @@ export class CraftingApp extends Application {
         return super.close(options);
     }
 
+    async _render(force?: boolean, options?: Application.RenderOptions): Promise<void> {
+        await super._render(force, options);
+
+        // Center the window on first render
+        if (!this._hasBeenCentered) {
+            this.centerWindow();
+            this._hasBeenCentered = true;
+        }
+    }
+
+    private centerWindow(): void {
+        const position = this.position;
+        const element = this.element;
+
+        if (!element || element.length === 0) return;
+
+        // Get viewport dimensions
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        // Get current dimensions or use defaults
+        const width: number = (typeof position.width === 'number' ? position.width : null) || 900;
+        const height: number = (typeof position.height === 'number' ? position.height : null) || 450;
+
+        // Calculate centered position
+        const left = Math.max(0, (viewportWidth - width) / 2);
+        const top = Math.max(0, (viewportHeight - height) / 2);
+
+        // Apply centered position
+        this.setPosition({ left, top });
+    }
+
     static get defaultOptions() {
+        // Get saved dimensions or use defaults
+        const savedWidth = Settings.get(Settings.CRAFTING_APP_WIDTH);
+        const savedHeight = Settings.get(Settings.CRAFTING_APP_HEIGHT);
+
+        // Calculate max dimensions based on viewport (90% of screen size)
+        const maxWidth = Math.min(1200, window.innerWidth * 0.9);
+        const maxHeight = Math.min(800, window.innerHeight * 0.9);
+
+        // Ensure saved dimensions don't exceed max
+        const width = Math.min(savedWidth, maxWidth);
+        const height = Math.min(savedHeight, maxHeight);
+
         return foundry.utils.mergeObject(super.defaultOptions, {
             // @ts-ignore
             title: game.i18n.localize(`beaversCrafting.crafting-app.title`),
-            width: Settings.get(Settings.CRAFTING_APP_WIDTH),
-            height: Settings.get(Settings.CRAFTING_APP_HEIGHT),
+            width: width,
+            height: height,
             template: "modules/bobs-crafting-guide/templates/crafting-app.hbs",
             closeOnSubmit: true,
             submitOnClose: true,
