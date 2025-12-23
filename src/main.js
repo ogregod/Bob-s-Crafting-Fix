@@ -300,3 +300,75 @@ Handlebars.registerHelper('beavers-split', function (input, delimiter) {
     }
     return []; // Return an empty array if input is not a string
 });
+
+// Helper to create objects from key-value pairs
+Handlebars.registerHelper('beavers-object', function(...args) {
+    // Remove the last argument (Handlebars options object)
+    args.pop();
+
+    const obj = {};
+    for (let i = 0; i < args.length; i += 2) {
+        if (i + 1 < args.length) {
+            obj[args[i]] = args[i + 1];
+        }
+    }
+    return obj;
+});
+
+// Helper to render test UI based on test type
+Handlebars.registerHelper('beavers-test', function(testData, options) {
+    if (!testData || !testData.type) {
+        return new Handlebars.SafeString('<div class="error">No test type specified</div>');
+    }
+
+    const disabled = options.hash.disabled || false;
+    const minimized = options.hash.minimized || false;
+    const prefixName = options.hash.prefixName || '';
+
+    // Get available test types
+    const testTypes = [
+        { value: 'SkillTest', label: game.i18n.localize('beaversCrafting.test.skill') || 'Skill Check' },
+        { value: 'AbilityTest', label: game.i18n.localize('beaversCrafting.test.ability') || 'Ability Check' },
+        { value: 'ToolTest', label: game.i18n.localize('beaversCrafting.test.tool') || 'Tool Check' },
+        { value: 'IncrementStep', label: game.i18n.localize('beaversCrafting.test.increment') || 'Auto Progress' }
+    ];
+
+    let html = '<div class="beavers-test flexrow">';
+
+    // Test type selection
+    html += '<select class="beavers-test-selection" name="' + prefixName + '.type"' + (disabled ? ' disabled' : '') + '>';
+    for (const type of testTypes) {
+        html += '<option value="' + type.value + '"' + (testData.type === type.value ? ' selected' : '') + '>' + type.label + '</option>';
+    }
+    html += '</select>';
+
+    // Test-specific configuration
+    if (!minimized && testData.data) {
+        if (testData.type === 'SkillTest') {
+            const skills = CONFIG.DND5E.skills || {};
+            html += '<select name="' + prefixName + '.data.skill"' + (disabled ? ' disabled' : '') + '>';
+            for (const [key, skill] of Object.entries(skills)) {
+                html += '<option value="' + key + '"' + (testData.data.skill === key ? ' selected' : '') + '>' + (skill.label || key) + '</option>';
+            }
+            html += '</select>';
+            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+        } else if (testData.type === 'AbilityTest') {
+            const abilities = CONFIG.DND5E.abilities || {};
+            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + '>';
+            for (const [key, ability] of Object.entries(abilities)) {
+                html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + (ability.label || key) + '</option>';
+            }
+            html += '</select>';
+            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+        } else if (testData.type === 'ToolTest') {
+            html += '<label>Tool:</label><input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="Tool name or UUID"' + (disabled ? ' disabled' : '') + ' style="flex:1" />';
+            html += '<label>DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px" />';
+        } else if (testData.type === 'IncrementStep') {
+            html += '<span style="margin-left:10px">Auto-progress (no roll required)</span>';
+        }
+    }
+
+    html += '</div>';
+
+    return new Handlebars.SafeString(html);
+});

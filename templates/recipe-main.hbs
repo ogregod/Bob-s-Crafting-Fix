@@ -46,11 +46,9 @@
                         <div class="flexrow beavers-component">
                             <select {{#unless editable}}disabled{{/unless}}
                                     name="flags.beavers-crafting.recipe.currency.name" class="name">
-                                {{#select recipe.currency.name}}
                                     {{#each currencies}}
-                                        <option value="{{this.id}}">{{this.label}}</option>
+                                        <option value="{{this.id}}" {{#if (eq this.id ../recipe.currency.name)}}selected{{/if}}>{{this.label}}</option>
                                     {{/each}}
-                                {{/select}}
                             </select>
                             <div class="attribute" style="min-width: 60px;text-align: right;">
                                 <input {{#unless editable}}disabled{{/unless}}

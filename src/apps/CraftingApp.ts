@@ -95,12 +95,13 @@ export class CraftingApp extends Application {
         if (this.data.recipe === undefined || this.element === null) {
             return;
         }
+        const renderTemplateFunc = ((foundry as any).applications?.handlebars?.renderTemplate || renderTemplate) as typeof renderTemplate;
         const crafting = await Crafting.fromRecipe(this.data.actor.id, this.data.recipe);
         RecipeCompendium.validateRecipeToItemList(RecipeCompendium._filterData(this.data.recipe.input,(c)=>c.type==="Item"), this.data.actor.items,crafting.result);
         await crafting.checkRequired();
         await crafting.checkCurrency();
         this.data.result = crafting.result;
-        this.data.content = await renderTemplate('modules/bobs-crafting-guide/templates/crafting-app-main.hbs',
+        this.data.content = await renderTemplateFunc('modules/bobs-crafting-guide/templates/crafting-app-main.hbs',
             {
                 recipe: this.data.recipe,
                 currencyComponent: this.data.recipe.currency?getCurrencyComponent(this.data.recipe.currency.name,this.data.recipe.currency.value):undefined,
@@ -206,7 +207,8 @@ export class CraftingApp extends Application {
     }
 
     addDragDrop(html) {
-        const dropFilter = new DragDrop({
+        const DragDropImpl = ((foundry as any).applications?.ux?.DragDrop?.implementation) || DragDrop;
+        const dropFilter = new DragDropImpl({
             dropSelector: '.drop-area, .ingredients .flexrow',
             permissions: {
                 dragstart: this._canDragStart.bind(this),

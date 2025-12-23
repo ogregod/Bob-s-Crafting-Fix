@@ -22,6 +22,7 @@ export class ActorSheetTab {
     }
 
     async init() {
+        const renderTemplateFunc = ((foundry as any).applications?.handlebars?.renderTemplate || renderTemplate) as typeof renderTemplate;
         const label = Settings.get(Settings.TAB_NAME) || game["i18n"].localize("beaversCrafting.actorSheet.tab");
         const icon = Settings.get(Settings.TAB_ICON) || "fa-scroll";
         const flag = foundry.utils.getProperty(this.app.actor,`flags.${Settings.NAMESPACE}.crafting`) || {};
@@ -40,7 +41,7 @@ export class ActorSheetTab {
             unsortedFolders.push({folder:folder,crafting:crafting,chatData:crafting.getChatData(),id:x});
         }
         const sortedFolders = sortByFolder(unsortedFolders)
-        const tabBody = $(await renderTemplate('modules/bobs-crafting-guide/templates/actor-sheet-tab.hbs',
+        const tabBody = $(await renderTemplateFunc('modules/bobs-crafting-guide/templates/actor-sheet-tab.hbs',
             {
                 folders:sortedFolders,
             }));
