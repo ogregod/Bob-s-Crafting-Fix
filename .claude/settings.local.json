@@ -14,7 +14,10 @@
       "Bash(ln:*)",
       "Bash(cat:*)",
       "Bash(powershell -Command \"Compress-Archive -Path ''dist\\\\*'' -DestinationPath ''bobs-crafting-guide-fixed.zip'' -Force\")",
-      "Bash(powershell:*)"
+      "Bash(powershell:*)",
+      "Bash(npm run build:dev:*)",
+      "Bash(npm run:*)",
+      "Bash(dir:*)"
     ]
   }
 }
