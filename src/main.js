@@ -372,15 +372,39 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
             html += '</select>';
             html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'ToolTest') {
-            html += '<label style="margin-left: 5px;">Tool:</label><input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="e.g., Cook\'s Utensils"' + (disabled ? ' disabled' : '') + ' style="flex:1; min-width: 150px;" />';
+            // Get configured tools from settings
+            const configuredTools = game.settings.get('bobs-crafting-guide', 'toolConfig') || [];
+
+            html += '<label style="margin-left: 5px;">Tool:</label>';
+
+            // Show dropdown if tools are configured, otherwise text input
+            if (configuredTools.length > 0) {
+                html += '<select name="' + prefixName + '.data.tool"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; min-width: 150px;">';
+                for (const tool of configuredTools) {
+                    html += '<option value="' + tool.name + '"' + (testData.data.tool === tool.name ? ' selected' : '') + '>' + tool.name + '</option>';
+                }
+                html += '</select>';
+            } else {
+                html += '<input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="e.g., Cook\'s Utensils"' + (disabled ? ' disabled' : '') + ' style="flex:1; min-width: 150px;" />';
+            }
 
             // Add ability selector for tool checks
             const abilities = CONFIG.DND5E.abilities || {};
             html += '<label style="margin-left: 5px;">Ability:</label>';
             html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px;">';
+
+            // If there are configured tools and one is selected, pre-select its ability
+            let defaultAbility = testData.data.ability;
+            if (configuredTools.length > 0 && testData.data.tool) {
+                const selectedTool = configuredTools.find(t => t.name === testData.data.tool);
+                if (selectedTool && !defaultAbility) {
+                    defaultAbility = selectedTool.ability;
+                }
+            }
+
             for (const [key, ability] of Object.entries(abilities)) {
                 const abilityLabel = ability.label ? game.i18n.localize(ability.label) : key;
-                html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + abilityLabel + '</option>';
+                html += '<option value="' + key + '"' + (defaultAbility === key ? ' selected' : '') + '>' + abilityLabel + '</option>';
             }
             html += '</select>';
 

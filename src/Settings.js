@@ -1,4 +1,5 @@
 import {ModuleConfig} from "./apps/ModuleConfig.js";
+import {ToolConfig} from "./apps/ToolConfig.js";
 
 export class Settings {
 
@@ -9,6 +10,8 @@ export class Settings {
     static TIME_TO_CRAFT = "timeToCraft";
     static USE_ATTENDANTS = "useAttendants";
     static MODULE_CONFIG_BUTTON = "moduleConfigButton";
+    static TOOL_CONFIG_BUTTON = "toolConfigButton";
+    static TOOL_CONFIG = "toolConfig";
     static RECIPE_SUBTYPE = "Recipe";
     static ANYOF_SUBTYPE = "AnyOf";
     static MAJOR_VERSION = "majorVersion";
@@ -47,6 +50,16 @@ export class Settings {
             hint: game.i18n.localize('beaversCrafting.settings.moduleButton.hint'),
             scope: "world",
             type: ModuleConfig,
+        });
+
+        // Tool Configuration Menu
+        game.settings.registerMenu(this.NAMESPACE, this.TOOL_CONFIG_BUTTON, {
+            name: "Configure Tools",
+            label: "Configure Tools",
+            hint: "Configure available tools for recipes with drag and drop",
+            scope: "world",
+            type: ToolConfig,
+            icon: "fas fa-hammer"
         });
 
         game.settings.register(this.NAMESPACE, this.TIME_TO_CRAFT, {
@@ -161,15 +174,14 @@ export class Settings {
             default: 450,
             type: Number,
         });
-        if (game["system"].id === "dnd5e") {
-            game["settings"].register(this.NAMESPACE, "toolConfig;", {
-                name: "ToolConfig",
-                scope: "world",
-                config: false,
-                default: [],
-                type: Object
-            });
-        }
+        // Tool Configuration Storage
+        game.settings.register(this.NAMESPACE, this.TOOL_CONFIG, {
+            name: "Tool Configuration",
+            scope: "world",
+            config: false,
+            default: [],
+            type: Array
+        });
     }
 
     static get(key) {
