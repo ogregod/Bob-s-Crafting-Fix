@@ -328,10 +328,11 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
         testData.data = {};
     }
 
-    // Check if options exists before accessing hash
-    const disabled = options?.hash?.disabled || false;
-    const minimized = options?.hash?.minimized || false;
-    const prefixName = options?.hash?.prefixName || '';
+    // Options can be either a Handlebars options object or a plain object from beavers-object helper
+    const opts = options?.hash || options || {};
+    const disabled = opts.disabled || false;
+    const minimized = opts.minimized || false;
+    const prefixName = opts.prefixName || '';
 
     // Get available test types
     const testTypes = [
@@ -356,7 +357,8 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
             const skills = CONFIG.DND5E.skills || {};
             html += '<select name="' + prefixName + '.data.skill"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto;">';
             for (const [key, skill] of Object.entries(skills)) {
-                html += '<option value="' + key + '"' + (testData.data.skill === key ? ' selected' : '') + '>' + (skill.label || key) + '</option>';
+                const skillLabel = skill.label ? game.i18n.localize(skill.label) : key;
+                html += '<option value="' + key + '"' + (testData.data.skill === key ? ' selected' : '') + '>' + skillLabel + '</option>';
             }
             html += '</select>';
             html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
@@ -364,7 +366,8 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
             const abilities = CONFIG.DND5E.abilities || {};
             html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto;">';
             for (const [key, ability] of Object.entries(abilities)) {
-                html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + (ability.label || key) + '</option>';
+                const abilityLabel = ability.label ? game.i18n.localize(ability.label) : key;
+                html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + abilityLabel + '</option>';
             }
             html += '</select>';
             html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
