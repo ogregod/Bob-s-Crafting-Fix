@@ -861,8 +861,9 @@ actor-sheet
 .beavers-crafting.actor-tab .crafting-tab-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    max-height: calc(100vh - 200px);
+    min-height: 300px;
+    max-height: 600px;
+    height: auto;
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid var(--beavers-actor-border-color);
     border-radius: 6px;

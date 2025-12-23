@@ -308,12 +308,31 @@ export class Dnd5eSystem {
      * @returns True if they match
      */
     private isSameItem(item: any, component: ComponentData): boolean {
+        // Debug logging
+        console.log("Comparing item:", {
+            name: item.name,
+            type: item.type,
+            uuid: item.uuid
+        }, "with component:", {
+            name: component.name,
+            type: component.type,
+            uuid: component.uuid
+        });
+
         // If UUIDs match, they're the same item
         if (component.uuid && item.uuid && component.uuid === item.uuid) {
+            console.log("  -> Match by UUID!");
             return true;
         }
+
         // Fallback to name+type comparison (works even if UUIDs don't match)
-        return item.name === component.name && item.type === component.type;
+        const nameMatch = item.name === component.name;
+        const typeMatch = item.type === component.type;
+        const finalMatch = nameMatch && typeMatch;
+
+        console.log("  -> Name match:", nameMatch, "Type match:", typeMatch, "Final:", finalMatch);
+
+        return finalMatch;
     }
 
     /**
