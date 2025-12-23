@@ -336,10 +336,10 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
 
     // Get available test types
     const testTypes = [
-        { value: 'SkillTest', label: game.i18n.localize('beaversCrafting.test.skill') || 'Skill Check' },
-        { value: 'AbilityTest', label: game.i18n.localize('beaversCrafting.test.ability') || 'Ability Check' },
-        { value: 'ToolTest', label: game.i18n.localize('beaversCrafting.test.tool') || 'Tool Check' },
-        { value: 'IncrementStep', label: game.i18n.localize('beaversCrafting.test.increment') || 'Auto Progress' }
+        { value: 'SkillTest', label: 'Skill Check' },
+        { value: 'AbilityTest', label: 'Ability Check' },
+        { value: 'ToolTest', label: 'Tool Check' },
+        { value: 'IncrementStep', label: 'Auto Progress' }
     ];
 
     let html = '<div class="beavers-test flexrow" style="align-items: center; gap: 5px;">';
@@ -373,6 +373,17 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
             html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'ToolTest') {
             html += '<label style="margin-left: 5px;">Tool:</label><input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="e.g., Cook\'s Utensils"' + (disabled ? ' disabled' : '') + ' style="flex:1; min-width: 150px;" />';
+
+            // Add ability selector for tool checks
+            const abilities = CONFIG.DND5E.abilities || {};
+            html += '<label style="margin-left: 5px;">Ability:</label>';
+            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px;">';
+            for (const [key, ability] of Object.entries(abilities)) {
+                const abilityLabel = ability.label ? game.i18n.localize(ability.label) : key;
+                html += '<option value="' + key + '"' + (testData.data.ability === key ? ' selected' : '') + '>' + abilityLabel + '</option>';
+            }
+            html += '</select>';
+
             html += '<label style="margin-left: 5px;">DC:</label><input type="number" name="' + prefixName + '.data.dc" value="' + (testData.data.dc || 10) + '"' + (disabled ? ' disabled' : '') + ' style="width:60px; flex: 0 0 auto;" />';
         } else if (testData.type === 'IncrementStep') {
             html += '<span style="margin-left:10px; font-style: italic;">Auto-progress (no roll required)</span>';
