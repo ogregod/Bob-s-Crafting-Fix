@@ -388,10 +388,18 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
                 html += '<input type="text" name="' + prefixName + '.data.tool" value="' + (testData.data.tool || '') + '" placeholder="e.g., Cook\'s Utensils"' + (disabled ? ' disabled' : '') + ' style="flex:1; min-width: 150px;" />';
             }
 
-            // Add ability selector for tool checks
+            // Add skill OR ability selector for tool checks
+            const skills = CONFIG.DND5E.skills || {};
             const abilities = CONFIG.DND5E.abilities || {};
-            html += '<label style="margin-left: 5px;">Ability:</label>';
-            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px;">';
+
+            html += '<label style="margin-left: 5px;">Check Type:</label>';
+            html += '<select name="' + prefixName + '.data.checkType"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px;" class="tool-check-type">';
+            html += '<option value="ability"' + ((testData.data.checkType === 'ability' || !testData.data.checkType) ? ' selected' : '') + '>Ability</option>';
+            html += '<option value="skill"' + (testData.data.checkType === 'skill' ? ' selected' : '') + '>Skill</option>';
+            html += '</select>';
+
+            // Ability dropdown (shown when checkType is 'ability')
+            html += '<select name="' + prefixName + '.data.ability"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px; ' + (testData.data.checkType === 'skill' ? 'display:none;' : '') + '" class="tool-ability-select">';
 
             // If there are configured tools and one is selected, pre-select its ability
             let defaultAbility = testData.data.ability;
@@ -405,6 +413,14 @@ Handlebars.registerHelper('beavers-test', function(testData, options) {
             for (const [key, ability] of Object.entries(abilities)) {
                 const abilityLabel = ability.label ? game.i18n.localize(ability.label) : key;
                 html += '<option value="' + key + '"' + (defaultAbility === key ? ' selected' : '') + '>' + abilityLabel + '</option>';
+            }
+            html += '</select>';
+
+            // Skill dropdown (shown when checkType is 'skill')
+            html += '<select name="' + prefixName + '.data.skill"' + (disabled ? ' disabled' : '') + ' style="flex: 0 0 auto; margin-left: 5px; ' + (testData.data.checkType !== 'skill' ? 'display:none;' : '') + '" class="tool-skill-select">';
+            for (const [key, skill] of Object.entries(skills)) {
+                const skillLabel = skill.label ? game.i18n.localize(skill.label) : key;
+                html += '<option value="' + key + '"' + (testData.data.skill === key ? ' selected' : '') + '>' + skillLabel + '</option>';
             }
             html += '</select>';
 
