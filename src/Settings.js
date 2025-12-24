@@ -162,6 +162,14 @@ export class Settings {
             default: 400,
             type: Number,
         });
+        game.settings.register(this.NAMESPACE, "testPresets", {
+            name: "Test Presets",
+            hint: "Saved test configurations for quick reuse",
+            scope: "world",
+            config: false,
+            type: Object,
+            default: {}
+        });
         game.settings.register(this.NAMESPACE, this.CRAFTING_APP_WIDTH, {
             scope: "user",
             config: false,

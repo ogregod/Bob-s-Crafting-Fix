@@ -124,6 +124,13 @@ export class RecipeSheet {
   }
 
   async render() {
+    console.log("[RecipeSheet] Starting render...");
+    console.log("[RecipeSheet] Item data:", {
+      name: this.item.name,
+      system: this.item.system,
+      flags: this.item.flags
+    });
+
     const renderTemplateFunc = ((foundry as any).applications?.handlebars?.renderTemplate || renderTemplate) as typeof renderTemplate;
     let main = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-main.hbs",
       {
@@ -136,6 +143,8 @@ export class RecipeSheet {
         canRollAbility: true, // DnD 5e always supports ability rolls
         hasCraftedFlag: Settings.get(Settings.SEPARATE_CRAFTED_ITEMS) !== "none",
       });
+
+    console.log("[RecipeSheet] Main tab rendered");
     let description = "";
     if (game["version"].split(".")[0] >= 12) {
       description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
@@ -152,6 +161,9 @@ export class RecipeSheet {
           editable: this.editable,
         });
     }
+
+    console.log("[RecipeSheet] Description tab rendered");
+
     let template = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-sheet.hbs", {
       main: main,
       description: description,
@@ -164,7 +176,21 @@ export class RecipeSheet {
     if (this.app.scrollToPosition) {
       this.recipeElement.scrollTop(this.app.scrollToPosition);
     }
+
+    // Populate test presets dropdown
+    const presets = ((game as Game).settings.get(Settings.NAMESPACE, "testPresets") as any) || {};
+    const presetsDropdown = this.recipeElement.find(".load-test-preset");
+
+    // Clear existing options except first
+    presetsDropdown.find("option:not(:first)").remove();
+
+    // Add preset options
+    for (const [name, preset] of Object.entries(presets)) {
+      presetsDropdown.append(`<option value="${name}">${name}</option>`);
+    }
+
     this.handleEvents();
+    console.log("[RecipeSheet] Render complete");
   }
 
   handleEvents() {
@@ -184,38 +210,73 @@ export class RecipeSheet {
   }
 
   async update() {
-    let update = { flags: {} };
+    console.log("[RecipeSheet] Starting update...");
+
+    let update: any = { flags: {} };
     const formData = this.getFormData();
-    // add macro before setting it via serialization to null
-    if (!this.app.form) {
-      for (const [key, value] of Object.entries(formData)) {
+
+    console.log("[RecipeSheet] Form data collected:", formData);
+
+    // Separate recipe flags from item system data
+    const systemData: any = {};
+    let itemName: string | undefined = undefined;
+
+    for (const [key, value] of Object.entries(formData)) {
+      if (key.startsWith("flags.beavers-crafting.recipe.")) {
+        // Recipe-specific data
         let recipeKey = key.replace("flags.beavers-crafting.recipe.", "");
         foundry.utils.setProperty(this.recipe, recipeKey, value);
+      } else if (key.startsWith("system.")) {
+        // Item system data (weight, price, rarity, etc.)
+        let systemKey = key.replace("system.", "");
+        foundry.utils.setProperty(systemData, systemKey, value);
+      } else if (key === "name") {
+        // Item name
+        itemName = value as string;
       }
     }
+
+    // Build update object
     update.flags[Settings.NAMESPACE] = {
       recipe: this.recipe.serialize(),
     };
-    if (!this.app.form) {
-      // @ts-ignore
-      for (const [key, value] of Object.entries(formData)) {
-        foundry.utils.setProperty(update, key, value);
+
+    // Add system data if any changed
+    if (Object.keys(systemData).length > 0) {
+      // Ensure price object structure
+      if (systemData["price"]) {
+        if (!systemData["price"]["value"]) systemData["price"]["value"] = 0;
+        if (!systemData["price"]["denomination"]) systemData["price"]["denomination"] = 'gp';
       }
+      update.system = systemData;
+      console.log("[RecipeSheet] System data to update:", systemData);
     }
+
+    // Add name if changed
+    if (itemName !== undefined) {
+      update.name = itemName;
+      console.log("[RecipeSheet] Name to update:", itemName);
+    }
+
+    console.log("[RecipeSheet] Final update object:", update);
+
     await this.item.update(update, { performDeletions: true });
     this.recipe = Recipe.fromItem(this.item);
 
     if (this.recipeElement) {
       this.app.scrollToPosition = this.recipeElement.scrollTop();
     }
+
     await this.render();
+    console.log("[RecipeSheet] Update complete");
   }
 
   getFormData() {
+    console.log("[RecipeSheet] Collecting form data...");
     let data = {};
     // @ts-ignore
     const elements = this.recipeElement[0].querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(
-      "input, select, textarea",
+      "input, select, textarea, prose-mirror",
     );
     for (let el of elements) {
       let element = el as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -230,14 +291,18 @@ export class RecipeSheet {
           let select: HTMLSelectElement = el as HTMLSelectElement;
           let selectedValues = Array.from(select.selectedOptions)
             .map(option => option.value);
-          data[element.name] = selectedValues;
+          // Handle select-one as single value, not array
+          data[element.name] = (element.type === "select-one" && selectedValues.length === 1) ? selectedValues[0] : selectedValues;
         } else if (element.type === "textarea") {
           data[element.name] = element.value;
         } else {
           data[element.name] = element.value;
         }
+
+        console.log(`[RecipeSheet] Field ${element.name} = ${data[element.name]}`);
       }
     }
+    console.log("[RecipeSheet] Collected data:", data);
     return data;
   }
 
@@ -342,6 +407,133 @@ export class RecipeSheet {
       if (Settings.get(Settings.DISPLAY_INGREDIENTS)) {
         fromUuid(uuid).then(i => {if(i) (i as any).sheet.render(true)});
       }
+    });
+
+    // Quick-add test buttons
+    this.recipeElement.find(".quick-add-test").click(async e => {
+      console.log("[RecipeSheet] Quick-add test clicked");
+      const testType = $(e.currentTarget).data("test-type");
+      console.log("[RecipeSheet] Test type:", testType);
+
+      // Add a new AND group
+      this.recipe.addTestAnd();
+
+      if (!this.recipe.beaversTests) return;
+
+      // Get the newly added AND key
+      const andKeys = Object.keys(this.recipe.beaversTests.ands).sort((a, b) => parseInt(a) - parseInt(b));
+      const newAndKey = andKeys[andKeys.length - 1];
+
+      // Set the test type for the first OR in the new AND group
+      const orKeys = Object.keys(this.recipe.beaversTests.ands[newAndKey].ors);
+      if (orKeys.length > 0) {
+        this.recipe.beaversTests.ands[newAndKey].ors[orKeys[0]].type = testType;
+
+        // Set default data based on test type
+        switch (testType) {
+          case 'SkillTest':
+            this.recipe.beaversTests.ands[newAndKey].ors[orKeys[0]].data = { skill: 'acr', dc: 10 };
+            break;
+          case 'AbilityTest':
+            this.recipe.beaversTests.ands[newAndKey].ors[orKeys[0]].data = { ability: 'str', dc: 10 };
+            break;
+          case 'ToolTest':
+            this.recipe.beaversTests.ands[newAndKey].ors[orKeys[0]].data = { tool: '', dc: 10 };
+            break;
+          case 'IncrementStep':
+            this.recipe.beaversTests.ands[newAndKey].ors[orKeys[0]].data = {};
+            break;
+        }
+      }
+
+      console.log("[RecipeSheet] Test added, rendering...");
+      await this.render();
+      await this.update();
+    });
+
+    // Collapsible test cards
+    this.recipeElement.find("[data-collapse-target]").click(e => {
+      const target = $(e.currentTarget).data("collapse-target");
+      const content = this.recipeElement.find(`#${target}`);
+      const icon = $(e.currentTarget).find(".fa-chevron-down, .fa-chevron-right");
+
+      content.slideToggle(200);
+      icon.toggleClass("fa-chevron-down fa-chevron-right");
+    });
+
+    // Save test preset
+    this.recipeElement.find(".save-test-preset").click(async e => {
+      console.log("[RecipeSheet] Save preset clicked");
+
+      if (!this.recipe.beaversTests || Object.keys(this.recipe.beaversTests.ands || {}).length === 0) {
+        ui.notifications?.warn("No tests to save as preset");
+        return;
+      }
+
+      // Prompt for preset name
+      const name: string = await new Promise((resolve) => {
+        new Dialog({
+          title: "Save Test Preset",
+          content: `
+            <div class="form-group">
+              <label>Preset Name:</label>
+              <input type="text" name="preset-name" placeholder="e.g., Easy Crafting Check" autofocus/>
+            </div>
+          `,
+          buttons: {
+            save: {
+              label: "Save",
+              callback: (html) => {
+                const inputName = (html as JQuery).find('input[name="preset-name"]').val() as string;
+                resolve(inputName);
+              }
+            },
+            cancel: {
+              label: "Cancel",
+              callback: () => resolve("")
+            }
+          },
+          default: "save"
+        }).render(true);
+      });
+
+      if (!name) return;
+
+      // Save to game settings
+      const presets = ((game as Game).settings.get(Settings.NAMESPACE, "testPresets") as any) || {};
+      presets[name] = JSON.parse(JSON.stringify(this.recipe.beaversTests));
+      await (game as Game).settings.set(Settings.NAMESPACE, "testPresets", presets);
+
+      console.log("[RecipeSheet] Preset saved:", name);
+      ui.notifications?.info(`Test preset "${name}" saved`);
+
+      // Re-render to update preset dropdown
+      await this.render();
+    });
+
+    // Load test preset
+    this.recipeElement.find(".load-test-preset").change(async e => {
+      const presetName = $(e.currentTarget).val() as string;
+      if (!presetName) return;
+
+      console.log("[RecipeSheet] Loading preset:", presetName);
+
+      const presets = ((game as Game).settings.get(Settings.NAMESPACE, "testPresets") as any) || {};
+      const preset = presets[presetName];
+
+      if (!preset) {
+        ui.notifications?.error("Preset not found");
+        return;
+      }
+
+      // Apply preset to current recipe
+      this.recipe.beaversTests = JSON.parse(JSON.stringify(preset));
+
+      console.log("[RecipeSheet] Preset loaded, rendering...");
+      await this.render();
+      await this.update();
+
+      ui.notifications?.info(`Test preset "${presetName}" loaded`);
     });
   }
 

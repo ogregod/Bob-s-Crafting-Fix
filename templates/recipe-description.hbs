@@ -1,4 +1,63 @@
 <div class="flexcol recipe-description" style="padding:10px; gap:15px;">
+    {{!-- Name Field --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.ItemName"}}</label>
+        <input {{#unless editable}}disabled{{/unless}}
+               type="text"
+               name="name"
+               value="{{item.name}}"
+               placeholder="{{localize "DND5E.ItemName"}}"/>
+    </div>
+
+    {{!-- Weight Field --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.Weight"}}</label>
+        <input {{#unless editable}}disabled{{/unless}}
+               type="number"
+               step="0.01"
+               name="system.weight"
+               value="{{item.system.weight}}"
+               placeholder="0"/>
+    </div>
+
+    {{!-- Price Fields (compound object) --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.Price"}}</label>
+        <div class="flexrow" style="gap:5px;">
+            <input {{#unless editable}}disabled{{/unless}}
+                   type="number"
+                   step="0.01"
+                   name="system.price.value"
+                   value="{{#if item.system.price}}{{item.system.price.value}}{{/if}}"
+                   placeholder="0"
+                   style="flex:1;"/>
+            <select {{#unless editable}}disabled{{/unless}}
+                    name="system.price.denomination"
+                    style="flex:0 0 80px;">
+                <option value="cp" {{#if (eq item.system.price.denomination "cp")}}selected{{/if}}>CP</option>
+                <option value="sp" {{#if (eq item.system.price.denomination "sp")}}selected{{/if}}>SP</option>
+                <option value="ep" {{#if (eq item.system.price.denomination "ep")}}selected{{/if}}>EP</option>
+                <option value="gp" {{#if (eq item.system.price.denomination "gp")}}selected{{else if (not item.system.price.denomination)}}selected{{/if}}>GP</option>
+                <option value="pp" {{#if (eq item.system.price.denomination "pp")}}selected{{/if}}>PP</option>
+            </select>
+        </div>
+    </div>
+
+    {{!-- Rarity Field --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.Rarity"}}</label>
+        <select {{#unless editable}}disabled{{/unless}}
+                name="system.rarity">
+            <option value="" {{#unless item.system.rarity}}selected{{/unless}}>—</option>
+            <option value="common" {{#if (eq item.system.rarity "common")}}selected{{/if}}>{{localize "DND5E.RarityCommon"}}</option>
+            <option value="uncommon" {{#if (eq item.system.rarity "uncommon")}}selected{{/if}}>{{localize "DND5E.RarityUncommon"}}</option>
+            <option value="rare" {{#if (eq item.system.rarity "rare")}}selected{{/if}}>{{localize "DND5E.RarityRare"}}</option>
+            <option value="veryRare" {{#if (eq item.system.rarity "veryRare")}}selected{{/if}}>{{localize "DND5E.RarityVeryRare"}}</option>
+            <option value="legendary" {{#if (eq item.system.rarity "legendary")}}selected{{/if}}>{{localize "DND5E.RarityLegendary"}}</option>
+            <option value="artifact" {{#if (eq item.system.rarity "artifact")}}selected{{/if}}>{{localize "DND5E.RarityArtifact"}}</option>
+        </select>
+    </div>
+
     {{!-- Folder --}}
     <div class="form-group">
         <label class="header" title="{{localize "beaversCrafting.recipe.folderHint"}}">
@@ -17,5 +76,24 @@
         <div class="section" style="min-height:200px; max-height:400px; overflow-y:auto;">
             {{editor recipe.instruction engine="prosemirror" target="flags.beavers-crafting.recipe.instruction" editable=editable}}
         </div>
+    </div>
+
+    {{!-- Chat Flavor --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.ChatFlavor"}}</label>
+        <input {{#unless editable}}disabled{{/unless}}
+               type="text"
+               name="system.chatFlavor"
+               value="{{item.system.chatFlavor}}"
+               placeholder="{{localize "DND5E.ChatFlavor"}}"/>
+    </div>
+
+    {{!-- Unidentified Description --}}
+    <div class="form-group">
+        <label class="header">{{localize "DND5E.Unidentified"}}</label>
+        <textarea {{#unless editable}}disabled{{/unless}}
+                  name="system.unidentified.description"
+                  rows="3"
+                  placeholder="{{localize "DND5E.UnidentifiedDescription"}}">{{#if item.system.unidentified}}{{item.system.unidentified.description}}{{/if}}</textarea>
     </div>
 </div>

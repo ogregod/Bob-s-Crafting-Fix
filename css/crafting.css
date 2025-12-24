@@ -698,6 +698,138 @@ beavers-recipe
 .beavers-recipe-sheet .sheet-right{
     min-width:305px
 }
+
+/* Modern Card-Based Recipe Layout */
+.beavers-recipe-sheet .recipe {
+    padding: 15px;
+    gap: 15px;
+}
+
+.beavers-recipe-sheet .recipe-card {
+    background: var(--beavers-item-background-color);
+    border: 1px solid var(--beavers-item-border-color);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    margin-bottom: 15px;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.beavers-recipe-sheet .recipe-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.beavers-recipe-sheet .recipe-card > .header {
+    border-radius: 6px 6px 0 0;
+    margin: -12px -12px 12px -12px;
+    padding-left: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.beavers-recipe-sheet .recipe-card .section {
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 4px;
+}
+
+/* Improve visual hierarchy */
+.beavers-recipe-sheet .sheet-left,
+.beavers-recipe-sheet .sheet-right {
+    padding: 0 8px;
+}
+
+.beavers-recipe-sheet .sheet-left {
+    min-width: 340px;
+}
+
+.beavers-recipe-sheet .sheet-right {
+    min-width: 340px;
+}
+
+/* Enhanced drop areas */
+.beavers-recipe-sheet .drop-area {
+    background: rgba(0, 0, 0, 0.03);
+    border: 2px dashed var(--beavers-item-border-color-highlight);
+    transition: all 0.2s ease;
+}
+
+.beavers-recipe-sheet .drop-area:hover {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: var(--beavers-item-color);
+}
+
+/* Better spacing for components */
+.beavers-recipe-sheet .beavers-component {
+    margin: 2px 0;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+    transition: background 0.15s ease;
+}
+
+.beavers-recipe-sheet .beavers-component:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Consume checkbox styling - enhanced */
+.beavers-recipe-sheet .beavers-component input[type="checkbox"] {
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+}
+
+.beavers-recipe-sheet .beavers-component input[type="checkbox"]:hover {
+    transform: scale(1.1);
+}
+
+/* Quick-add test buttons */
+.beavers-recipe-sheet .quick-add-test {
+    transition: all 0.2s ease;
+}
+
+.beavers-recipe-sheet .quick-add-test:hover {
+    background: var(--beavers-item-background-color-highlight) !important;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.beavers-recipe-sheet .quick-add-test:active {
+    transform: translateY(0);
+}
+
+/* Test preset buttons */
+.beavers-recipe-sheet .save-test-preset,
+.beavers-recipe-sheet .load-test-preset {
+    transition: all 0.2s ease;
+}
+
+.beavers-recipe-sheet .save-test-preset:hover {
+    background: var(--beavers-item-background-color-highlight) !important;
+}
+
+/* Collapsible test cards */
+.beavers-recipe-sheet .test-and-card {
+    transition: all 0.2s ease;
+}
+
+.beavers-recipe-sheet .test-and-card:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.beavers-recipe-sheet .test-and-card .header[data-collapse-target] {
+    user-select: none;
+}
+
+.beavers-recipe-sheet .test-and-card .header[data-collapse-target]:hover {
+    background: rgba(0, 0, 0, 0.12) !important;
+}
+
+.beavers-recipe-sheet .test-and-content {
+    transition: max-height 0.3s ease;
+}
+
 .beavers-recipe-sheet .header{
     height: 25px;
     align-items: center;

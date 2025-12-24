@@ -1,7 +1,7 @@
 <div class="flexrow recipe">
     <div class="sheet-left flexcol">
         {{#if useAttendants}}
-            <div class="attendants flexcol">
+            <div class="recipe-card attendants flexcol">
                 <div class="flexrow header">
                     <div class="name">{{localize "beaversCrafting.crafting-app.required"}}</div>
                 </div>
@@ -27,7 +27,7 @@
                 </div>
             </div>
         {{/if}}
-        <div class="flexcol cost">
+        <div class="recipe-card flexcol cost">
             <div class="flexrow header">
                 <div class="name">{{localize "beaversCrafting.crafting-app.cost"}}</div>
                 {{#if editable}}
@@ -92,7 +92,7 @@
         </div>
     </div>
     <div class="sheet-right">
-        <div class="tests flexcol">
+        <div class="recipe-card tests flexcol">
             <div class="flexrow header">
                 <div class="name">{{localize "beaversCrafting.recipe.beaversTests.tests"}}</div>
                 {{#if recipe.beaversTests}}
@@ -120,30 +120,77 @@
                     </div>
                 {{/if}}
             </div>
+
+            {{!-- Quick-add test buttons --}}
+            {{#if editable}}
+                <div class="test-quick-add-section" style="padding: 8px; background: rgba(0, 0, 0, 0.05); border-radius: 4px; margin-bottom: 8px;">
+                    <div style="font-size: 12px; margin-bottom: 6px; font-weight: 600;">Quick Add Test:</div>
+                    <div class="flexrow" style="gap: 6px; flex-wrap: wrap;">
+                        <button type="button" class="quick-add-test" data-test-type="SkillTest"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: var(--beavers-item-background-color); border: 1px solid var(--beavers-item-border-color); cursor: pointer;">
+                            <i class="fas fa-user-graduate" style="margin-right: 4px;"></i>Skill Check
+                        </button>
+                        <button type="button" class="quick-add-test" data-test-type="ToolTest"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: var(--beavers-item-background-color); border: 1px solid var(--beavers-item-border-color); cursor: pointer;">
+                            <i class="fas fa-tools" style="margin-right: 4px;"></i>Tool Check
+                        </button>
+                        <button type="button" class="quick-add-test" data-test-type="AbilityTest"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: var(--beavers-item-background-color); border: 1px solid var(--beavers-item-border-color); cursor: pointer;">
+                            <i class="fas fa-fist-raised" style="margin-right: 4px;"></i>Ability Check
+                        </button>
+                        <button type="button" class="quick-add-test" data-test-type="IncrementStep"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: var(--beavers-item-background-color); border: 1px solid var(--beavers-item-border-color); cursor: pointer;">
+                            <i class="fas fa-forward" style="margin-right: 4px;"></i>Auto Progress
+                        </button>
+                    </div>
+                </div>
+            {{/if}}
+
+            {{!-- Test presets section --}}
+            {{#if editable}}
+                <div class="test-presets-section" style="padding: 8px; background: rgba(0, 0, 0, 0.05); border-radius: 4px; margin-bottom: 8px;">
+                    <div class="flexrow" style="gap: 6px; align-items: center;">
+                        <div style="font-size: 12px; font-weight: 600; flex: 1;">Test Presets:</div>
+                        <button type="button" class="save-test-preset"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px; background: var(--beavers-item-background-color); border: 1px solid var(--beavers-item-border-color); cursor: pointer;">
+                            <i class="fas fa-save" style="margin-right: 4px;"></i>Save Current
+                        </button>
+                        <select class="load-test-preset"
+                                style="flex: 0 0 auto; padding: 4px 8px; border-radius: 4px;">
+                            <option value="">Load Preset...</option>
+                            {{!-- Populated dynamically --}}
+                        </select>
+                    </div>
+                </div>
+            {{/if}}
+
             <div class="section flexcol">
                 {{#if recipe.beaversTests}}
                     {{#each recipe.beaversTests.ands}}
-                        <div class="flexcol" style="padding-left:20px">
-                            <div class="flexrow header">
-                                <div class="name">{{localize "beaversCrafting.recipe.beaversTests.test"}}</div>
+                        <div class="test-and-card" style="margin-bottom: 10px; border: 1px solid var(--beavers-item-border-color); border-radius: 6px; overflow: hidden;">
+                            <div class="flexrow header" style="cursor: pointer; background: rgba(0, 0, 0, 0.08);" data-collapse-target="test-and-{{@key}}">
+                                <i class="fas fa-chevron-down" style="margin-right: 8px; transition: transform 0.2s;"></i>
+                                <div class="name">{{localize "beaversCrafting.recipe.beaversTests.test"}} {{@key}}</div>
                                 <div class="attribute flexrow" style="max-width:40px"
                                      title="{{localize "beaversCrafting.recipe.beaversTests.hitsHint"}}">
                                     {{localize "beaversCrafting.recipe.beaversTests.hits"}}:
                                     <input {{#unless ../editable}}disabled{{/unless}}
                                            name="flags.beavers-crafting.recipe.beaversTests.ands.{{@key}}.hits" type="number"
                                            step="any"
-                                           value="{{this.hits}}"/>
+                                           value="{{this.hits}}"
+                                           onclick="event.stopPropagation();"/>
                                 </div>
                                 {{#if ../editable}}
                                     <div class="action flexrow testOr"
                                          title="{{localize "beaversCrafting.recipe.beaversTests.orTestHint"}}">
-                                        <a class="item-add" data-and="{{@key}}">
+                                        <a class="item-add" data-and="{{@key}}" onclick="event.stopPropagation();">
                                             <i class="fas fa-plus"></i>
                                         </a>
                                     </div>
                                 {{/if}}
                             </div>
-                            {{#each this.ors}}
+                            <div id="test-and-{{@key}}" class="test-and-content" style="padding: 10px;">
+                                {{#each this.ors}}
                                 <div class="flexrow" style="line-height:20px;margin:2px 0px 2px 10px;">
                                     <div class="flexcol beavers-line" style="flex-wrap:nowrap;">
                                         {{{beavers-test this (beavers-object "disabled" (not ../../editable) "minimized" (not ../../editable) "prefixName" (concat "flags.beavers-crafting.recipe.beaversTests.ands."@../key ".ors." @key)) }}}
@@ -159,13 +206,14 @@
                                 {{#unless @last}}
                                     <div class="beavers-seperator" style="margin:3px 0px 3px;"></div>
                                 {{/unless}}
-                            {{/each}}
+                                {{/each}}
+                            </div>
                         </div>
                     {{/each}}
                 {{/if}}
             </div>
         </div>
-        <div class="results flexcol">
+        <div class="recipe-card results flexcol">
             <div class="flexrow header">
                 <div class="name">{{localize "beaversCrafting.recipe.results"}}</div>
                 {{#if editable}}
