@@ -32,6 +32,7 @@ class ToolTestCustomized implements TestCustomized {
     data: ToolTestData;
     private toolItem: any = null;
     private toolName: string = "Tool";
+    private resolvedToolName: Promise<string>;
 
     constructor(data: ToolTestData) {
         this.data = {
@@ -47,16 +48,29 @@ class ToolTestCustomized implements TestCustomized {
         if (data.tool) {
             this.toolName = data.tool;
         }
+
+        // Try to resolve tool name from UUID
+        this.resolvedToolName = this.resolveToolName();
+    }
+
+    private async resolveToolName(): Promise<string> {
+        if (this.data.uuid) {
+            try {
+                const tool = await fromUuid(this.data.uuid);
+                if (tool) {
+                    return (tool as any).name;
+                }
+            } catch (e) {
+                console.warn("Could not resolve tool UUID:", this.data.uuid);
+            }
+        }
+        return this.data.tool || "Tool";
     }
 
     render(): string {
-        if (this.toolItem) {
-            return `${this.toolItem.name} DC ${this.data.dc}`;
-        }
-        if (this.toolName && this.toolName !== "Tool") {
-            return `${this.toolName} DC ${this.data.dc}`;
-        }
-        return `Tool Check DC ${this.data.dc}`;
+        // Use the stored tool name (will be updated by resolveToolName)
+        const displayName = this.toolName && this.toolName !== "Tool" ? this.toolName : "Tool Check";
+        return `${displayName} DC ${this.data.dc}`;
     }
 
     async action(initiatorData: InitiatorData): Promise<TestResult> {
@@ -97,17 +111,70 @@ class ToolTestCustomized implements TestCustomized {
                 throw new Error(`Actor does not have required tool: ${toolIdentifier}`);
             }
 
+            // Update the tool name for display
+            this.toolName = this.toolItem.name;
+
+            // Prepare roll options
+            const rollOptions: any = {
+                targetValue: this.data.dc
+            };
+
+            // Add ability or skill based on checkType
+            if (this.data.checkType === 'skill' && this.data.skill) {
+                rollOptions.skill = this.data.skill;
+            } else if (this.data.ability) {
+                rollOptions.ability = this.data.ability;
+            }
+
+            console.log("Rolling tool check with options:", rollOptions);
+
             // DnD 5e tool check
             // @ts-ignore
-            const roll = await this.toolItem.rollToolCheck({
-                targetValue: this.data.dc,
-                chatMessage: true
-            });
+            const result = await this.toolItem.rollToolCheck(rollOptions);
+
+            console.log("Tool check result:", result);
+
+            // Handle different return formats (DnD5e v2 vs v3+)
+            let roll;
+            let total;
+
+            if (result?.rolls && result.rolls.length > 0) {
+                // DnD5e v3+ returns {rolls: [roll]}
+                roll = result.rolls[0];
+                total = roll.total;
+            } else if (result?.roll) {
+                // Some versions return {roll: Roll}
+                roll = result.roll;
+                total = roll.total;
+            } else if (result?.total !== undefined) {
+                // DnD5e v2 returns roll directly
+                roll = result;
+                total = result.total;
+            } else {
+                console.error("Unexpected roll result format:", result);
+                console.error("Available properties:", Object.keys(result || {}));
+
+                // Try to find the roll in the chat message that was just posted
+                const messages = (game as any).messages?.contents;
+                if (messages && messages.length > 0) {
+                    const lastMessage = messages[messages.length - 1];
+                    if (lastMessage.rolls && lastMessage.rolls.length > 0) {
+                        roll = lastMessage.rolls[0];
+                        total = roll.total;
+                        console.log("Retrieved roll from chat message:", total);
+                    }
+                }
+
+                if (!roll || total === undefined) {
+                    throw new Error("Failed to get roll result from tool check");
+                }
+            }
 
             // Check if roll succeeded
-            const total = roll.total;
             const success = total >= this.data.dc ? 1 : 0;
             const fail = total < this.data.dc ? 1 : 0;
+
+            console.log(`Tool check: rolled ${total} vs DC ${this.data.dc} = ${success ? 'SUCCESS' : 'FAIL'}`);
 
             return { success, fail };
         } catch (error) {
