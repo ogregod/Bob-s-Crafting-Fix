@@ -66,7 +66,7 @@ export class ActorSheetTab {
             new CraftingApp(this.app.actor).render(true);
         });
         tabBody.find(".removeCrafting").on("click",(e)=>{
-            const id = e.target.dataset.id;
+            const id = e.currentTarget.dataset.id;
             const flags = {}
             flags["beavers-crafting.crafting.-="+id] = null;
             void this.app.actor.update({flags:flags});

@@ -6,8 +6,12 @@
 import { Test, TestCustomized, TestResult, InitiatorData } from './Test.js';
 
 export interface ToolTestData {
-    uuid: string;   // Tool item UUID
-    dc: number;     // Difficulty Class
+    uuid?: string;      // Tool item UUID (new format)
+    tool?: string;      // Tool name (old format - for backwards compatibility)
+    ability?: string;   // Ability score (old format)
+    checkType?: string; // 'ability' or 'skill'
+    skill?: string;     // Skill name if checkType is 'skill'
+    dc: number;         // Difficulty Class
 }
 
 /**
@@ -27,17 +31,30 @@ export class ToolTest implements Test<ToolTestData> {
 class ToolTestCustomized implements TestCustomized {
     data: ToolTestData;
     private toolItem: any = null;
+    private toolName: string = "Tool";
 
     constructor(data: ToolTestData) {
         this.data = {
             uuid: data.uuid,
+            tool: data.tool,
+            ability: data.ability,
+            checkType: data.checkType,
+            skill: data.skill,
             dc: data.dc || 10
         };
+
+        // Store tool name for display
+        if (data.tool) {
+            this.toolName = data.tool;
+        }
     }
 
     render(): string {
         if (this.toolItem) {
             return `${this.toolItem.name} DC ${this.data.dc}`;
+        }
+        if (this.toolName && this.toolName !== "Tool") {
+            return `${this.toolName} DC ${this.data.dc}`;
         }
         return `Tool Check DC ${this.data.dc}`;
     }
@@ -49,22 +66,35 @@ class ToolTestCustomized implements TestCustomized {
         }
 
         try {
-            // Find the tool in actor's inventory
-            const tool = actor.items.find((item: any) => item.uuid === this.data.uuid);
-            if (!tool) {
-                // Try to resolve UUID globally
-                const globalTool = await fromUuid(this.data.uuid);
-                if (!globalTool) {
-                    throw new Error(`Tool not found: ${this.data.uuid}`);
+            // Try to find tool by UUID first (new format)
+            if (this.data.uuid) {
+                const tool = actor.items.find((item: any) => item.uuid === this.data.uuid);
+                if (!tool) {
+                    // Try to resolve UUID globally
+                    const globalTool = await fromUuid(this.data.uuid);
+                    if (globalTool) {
+                        // Check if actor has this tool by name
+                        const actorTool = actor.items.find((item: any) => item.name === globalTool.name && item.type === "tool");
+                        if (actorTool) {
+                            this.toolItem = actorTool;
+                        }
+                    }
+                } else {
+                    this.toolItem = tool;
                 }
-                // Check if actor has this tool by name
-                const actorTool = actor.items.find((item: any) => item.name === globalTool.name && item.type === "tool");
-                if (!actorTool) {
-                    throw new Error(`Actor does not have tool: ${globalTool.name}`);
-                }
-                this.toolItem = actorTool;
-            } else {
-                this.toolItem = tool;
+            }
+
+            // Fall back to finding by name (old format)
+            if (!this.toolItem && this.data.tool) {
+                this.toolItem = actor.items.find((item: any) =>
+                    item.name === this.data.tool && item.type === "tool"
+                );
+            }
+
+            // If still no tool found, throw error
+            if (!this.toolItem) {
+                const toolIdentifier = this.data.tool || this.data.uuid || "unknown";
+                throw new Error(`Actor does not have required tool: ${toolIdentifier}`);
             }
 
             // DnD 5e tool check
