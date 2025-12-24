@@ -13,6 +13,7 @@ export interface ComponentData {
     quantity?: number;
     flags?: any;
     userInteraction?: "always" | "never" | "onSuccess";
+    consume?: boolean; // Whether this component should be consumed (default: true)
 }
 
 /**
@@ -26,6 +27,7 @@ export class Component implements ComponentData {
     quantity: number;
     flags: any;
     userInteraction?: "always" | "never" | "onSuccess";
+    consume?: boolean;
 
     constructor(data: ComponentData) {
         this.type = data.type || "Item";
@@ -35,6 +37,7 @@ export class Component implements ComponentData {
         this.quantity = data.quantity || 1;
         this.flags = data.flags || {};
         this.userInteraction = data.userInteraction;
+        this.consume = data.consume !== undefined ? data.consume : true; // Default to true for backward compatibility
     }
 
     /**
@@ -120,7 +123,8 @@ export class Component implements ComponentData {
             uuid: this.uuid,
             quantity: this.quantity,
             flags: this.flags,
-            userInteraction: this.userInteraction
+            userInteraction: this.userInteraction,
+            consume: this.consume
         };
     }
 }

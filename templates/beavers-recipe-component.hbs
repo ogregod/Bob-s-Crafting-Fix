@@ -28,6 +28,16 @@
                step="any"
                value="{{component.quantity}}"/>
     </div>
+    {{#if (eq type 'input')}}
+        {{#if editable}}
+            <div class="attribute flexrow" title="Consume this item when crafting" style="padding:0 5px;">
+                <input type="checkbox"
+                       name="flags.beavers-crafting.recipe.{{type}}.{{group}}.{{key}}.consume"
+                       {{#if (or (eq component.consume undefined) component.consume)}}checked{{/if}}
+                       style="margin:0;width:auto;"/>
+            </div>
+        {{/if}}
+    {{/if}}
     <div class="attribute flexrow">
         {{#if (eq status 'success') }}
             <i class="fas fa-check"></i>

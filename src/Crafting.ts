@@ -208,7 +208,8 @@ export class Crafting implements CraftingData {
         }
         for (const componentResult of this.result._components.consumed._data) {
             const component = new Component(componentResult.component);
-            if (componentResult.userInteraction === "always") {
+            // Only process if consume is not explicitly false
+            if (componentResult.userInteraction === "always" && component.consume !== false) {
                 componentList.push(component);
             }
         }
@@ -228,7 +229,9 @@ export class Crafting implements CraftingData {
             }
         }
         for (const componentResult of this.result._components.consumed._data) {
-            if (componentResult.userInteraction === "always") {
+            const component = new Component(componentResult.component);
+            // Only mark as processed if consume is not explicitly false
+            if (componentResult.userInteraction === "always" && component.consume !== false) {
                 componentResult.setProcessed(true);
             }
         }
@@ -238,6 +241,12 @@ export class Crafting implements CraftingData {
         const componentList:Component[] = [];
         for (const componentResult of componentResults._data) {
             let component = new Component(componentResult.component);
+
+            // Skip processing if consume is explicitly set to false
+            if (component.consume === false) {
+                continue;
+            }
+
             if (componentResult.userInteraction === "always" || (componentResult.userInteraction === "onSuccess" && !this.result.hasError())) {
                 if (!componentResult.isProcessed){
                     componentList.push(component);
