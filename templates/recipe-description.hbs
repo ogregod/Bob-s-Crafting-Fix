@@ -1,47 +1,4 @@
 <div class="flexcol recipe-description" style="padding:10px; gap:15px;">
-    {{!-- Item Name --}}
-    <div class="form-group">
-        <label class="header">Item Name</label>
-        <input {{#unless editable}}disabled{{/unless}}
-               type="text"
-               name="name"
-               value="{{item.name}}"
-               placeholder="Recipe Name"/>
-    </div>
-
-    {{!-- Item Details Row --}}
-    <div class="flexrow" style="gap:10px;">
-        <div class="form-group" style="flex:1;">
-            <label class="header">Price</label>
-            <div class="flexrow" style="gap:5px;">
-                <input {{#unless editable}}disabled{{/unless}}
-                       type="number"
-                       name="system.price.value"
-                       value="{{item.system.price.value}}"
-                       placeholder="0"
-                       style="flex:2;"/>
-                <select {{#unless editable}}disabled{{/unless}}
-                        name="system.price.denomination"
-                        style="flex:1;">
-                    <option value="gp" {{#if (eq item.system.price.denomination "gp")}}selected{{/if}}>GP</option>
-                    <option value="sp" {{#if (eq item.system.price.denomination "sp")}}selected{{/if}}>SP</option>
-                    <option value="cp" {{#if (eq item.system.price.denomination "cp")}}selected{{/if}}>CP</option>
-                    <option value="pp" {{#if (eq item.system.price.denomination "pp")}}selected{{/if}}>PP</option>
-                    <option value="ep" {{#if (eq item.system.price.denomination "ep")}}selected{{/if}}>EP</option>
-                </select>
-            </div>
-        </div>
-        <div class="form-group" style="flex:1;">
-            <label class="header">Weight</label>
-            <input {{#unless editable}}disabled{{/unless}}
-                   type="number"
-                   name="system.weight"
-                   value="{{item.system.weight}}"
-                   placeholder="0"
-                   step="0.1"/>
-        </div>
-    </div>
-
     {{!-- Folder --}}
     <div class="form-group">
         <label class="header" title="{{localize "beaversCrafting.recipe.folderHint"}}">
