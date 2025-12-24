@@ -248,14 +248,61 @@ export class Dnd5eSystem {
                 // Removing items
                 const existing = this.findMatchingItem(actor, component);
                 if (existing) {
-                    const newQuantity = existing.system.quantity + component.quantity; // component.quantity is negative
-                    if (newQuantity <= 0) {
-                        toDelete.push(existing.id);
+                    // Check if this component uses the "uses" system
+                    if (component.totalUses && component.totalUses > 0 && component.usesNeeded && component.usesNeeded > 0) {
+                        // Handle uses-based consumption
+                        const NAMESPACE = 'bobs-crafting-guide';
+                        const totalUses = component.totalUses; // Total uses per item (e.g., 64 for a bag of salt)
+                        const usesToConsume = component.usesNeeded; // How many uses this recipe needs (e.g., 4)
+
+                        // Get current remaining uses (or initialize to total if not set)
+                        let remainingUses = foundry.utils.getProperty(existing, `flags.${NAMESPACE}.remainingUses`);
+                        if (remainingUses === undefined || remainingUses === null) {
+                            remainingUses = totalUses;
+                        }
+
+                        console.log(`[Dnd5eSystem] Consuming ${usesToConsume} uses from ${component.name} (${remainingUses}/${totalUses} remaining)`);
+
+                        // Calculate new remaining uses
+                        let newRemainingUses = remainingUses - usesToConsume;
+                        let quantityToRemove = 0;
+
+                        // If we've consumed all uses from current item(s), remove quantities
+                        while (newRemainingUses < 0 && existing.system.quantity > quantityToRemove) {
+                            quantityToRemove++;
+                            newRemainingUses += totalUses;
+                        }
+
+                        if (newRemainingUses < 0) {
+                            throw new Error(`Not enough uses of ${component.name}. Need ${usesToConsume} uses, but only ${remainingUses + (existing.system.quantity - 1) * totalUses} available.`);
+                        }
+
+                        const newQuantity = existing.system.quantity - quantityToRemove;
+
+                        if (newQuantity <= 0) {
+                            toDelete.push(existing.id);
+                        } else {
+                            const updateData: any = {
+                                _id: existing.id,
+                                "system.quantity": newQuantity
+                            };
+                            updateData[`flags.${NAMESPACE}.remainingUses`] = newRemainingUses;
+                            updateData[`flags.${NAMESPACE}.totalUses`] = totalUses;
+                            toUpdate.push(updateData);
+                        }
+
+                        console.log(`[Dnd5eSystem] Result: quantity=${newQuantity}, remainingUses=${newRemainingUses}`);
                     } else {
-                        toUpdate.push({
-                            _id: existing.id,
-                            "system.quantity": newQuantity
-                        });
+                        // Standard quantity-based consumption
+                        const newQuantity = existing.system.quantity + component.quantity; // component.quantity is negative
+                        if (newQuantity <= 0) {
+                            toDelete.push(existing.id);
+                        } else {
+                            toUpdate.push({
+                                _id: existing.id,
+                                "system.quantity": newQuantity
+                            });
+                        }
                     }
                 } else {
                     throw new Error(`Cannot remove ${component.name}: not found in inventory`);

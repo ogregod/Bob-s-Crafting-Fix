@@ -28,8 +28,26 @@
                step="any"
                value="{{component.quantity}}"/>
     </div>
-    {{#if (eq type 'input')}}
+    {{#if (or (eq type 'input') (eq type 'required'))}}
         {{#if editable}}
+            <div class="attribute" title="Total uses per item (e.g., bag of salt has 64 uses)" style="padding:0 3px;">
+                <input style="width:35px;text-align:right;background: rgba(0, 0, 0, 0.05); border:1px solid rgba(0,0,0,0.1); border-radius:3px; font-size:11px;"
+                       name="flags.beavers-crafting.recipe.{{type}}.{{group}}.{{key}}.totalUses"
+                       type="number"
+                       step="1"
+                       min="0"
+                       placeholder="Max"
+                       value="{{component.totalUses}}"/>
+            </div>
+            <div class="attribute" title="Uses needed for this recipe (e.g., recipe needs 4 uses)" style="padding:0 3px;">
+                <input style="width:35px;text-align:right;background: rgba(0, 0, 0, 0.08); border:1px solid rgba(0,0,0,0.15); border-radius:3px; font-size:11px;"
+                       name="flags.beavers-crafting.recipe.{{type}}.{{group}}.{{key}}.usesNeeded"
+                       type="number"
+                       step="1"
+                       min="0"
+                       placeholder="Need"
+                       value="{{component.usesNeeded}}"/>
+            </div>
             <div class="attribute flexrow" title="Consume this item when crafting" style="padding:0 5px; align-items:center; gap:3px;">
                 <i class="fas fa-fire" style="font-size:10px; color:#ff6b6b;"></i>
                 <input type="checkbox"

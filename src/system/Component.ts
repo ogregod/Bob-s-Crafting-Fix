@@ -14,6 +14,8 @@ export interface ComponentData {
     flags?: any;
     userInteraction?: "always" | "never" | "onSuccess";
     consume?: boolean; // Whether this component should be consumed (default: true)
+    totalUses?: number; // Total uses per item (e.g., a bag of salt has 64 uses)
+    usesNeeded?: number; // Uses consumed by this recipe (e.g., recipe needs 4 uses)
 }
 
 /**
@@ -28,6 +30,8 @@ export class Component implements ComponentData {
     flags: any;
     userInteraction?: "always" | "never" | "onSuccess";
     consume?: boolean;
+    totalUses?: number;
+    usesNeeded?: number;
 
     constructor(data: ComponentData) {
         this.type = data.type || "Item";
@@ -38,6 +42,8 @@ export class Component implements ComponentData {
         this.flags = data.flags || {};
         this.userInteraction = data.userInteraction;
         this.consume = data.consume !== undefined ? data.consume : true; // Default to true for backward compatibility
+        this.totalUses = data.totalUses; // Total uses per item (optional)
+        this.usesNeeded = data.usesNeeded; // Uses needed for recipe (optional)
     }
 
     /**
@@ -124,7 +130,9 @@ export class Component implements ComponentData {
             quantity: this.quantity,
             flags: this.flags,
             userInteraction: this.userInteraction,
-            consume: this.consume
+            consume: this.consume,
+            totalUses: this.totalUses,
+            usesNeeded: this.usesNeeded
         };
     }
 }
