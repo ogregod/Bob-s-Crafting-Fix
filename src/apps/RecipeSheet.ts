@@ -141,12 +141,14 @@ export class RecipeSheet {
       description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
         {
           recipe: this.recipe,
+          item: this.item,
           editable: this.editable,
         });
     } else {
       description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-description.hbs",
         {
           recipe: this.recipe,
+          item: this.item,
           editable: this.editable,
         });
     }

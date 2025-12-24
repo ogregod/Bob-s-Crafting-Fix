@@ -2,7 +2,8 @@
     <nav class="tabs" data-group="primary" style="flex:0 20px">
         <a class="item {{#if (eq active "description")}}active{{/if}}" data-tab="description">Description</a>
         <a class="item {{#if (eq active "main")}}active{{/if}}" data-tab="main">Main</a>
-        <a class="item {{#if (eq active "advanced")}}active{{/if}}" data-tab="advanced">Advanced</a>
+        {{!-- Advanced tab commented out for now - can be re-enabled later if needed --}}
+        {{!-- <a class="item {{#if (eq active "advanced")}}active{{/if}}" data-tab="advanced">Advanced</a> --}}
     </nav>
   <br/>
     <section>
@@ -12,12 +13,13 @@
         <div style="padding:0px; height:100%" class="tab main {{#if (eq active "main")}}active{{/if}}" data-tab="main" data-group="primary">
             {{{main}}}
         </div>
-        <div style="padding:0px; height:100%" class="tab advanced {{#if (eq active "advanced")}}active{{/if}}" data-tab="advanced" data-group="primary">
+        {{!-- Advanced tab content commented out for now - can be re-enabled later if needed --}}
+        {{!-- <div style="padding:0px; height:100%" class="tab advanced {{#if (eq active "advanced")}}active{{/if}}" data-tab="advanced" data-group="primary">
             <div class="flexcol" style="height:100%" >
                 <textarea style="height:100%" placeholder="your code here...&#10;available vars: result, actor, recipeData"
               {{#if editable}}disabled{{/if}}
               name="flags.beavers-crafting.recipe.macro">{{recipe.macro}}</textarea>
             </div>
-        </div>
+        </div> --}}
     </section>
 </div>

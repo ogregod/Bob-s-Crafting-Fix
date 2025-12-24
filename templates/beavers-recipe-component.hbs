@@ -30,11 +30,12 @@
     </div>
     {{#if (eq type 'input')}}
         {{#if editable}}
-            <div class="attribute flexrow" title="Consume this item when crafting" style="padding:0 5px;">
+            <div class="attribute flexrow" title="Consume this item when crafting" style="padding:0 5px; align-items:center; gap:3px;">
+                <i class="fas fa-fire" style="font-size:10px; color:#ff6b6b;"></i>
                 <input type="checkbox"
                        name="flags.beavers-crafting.recipe.{{type}}.{{group}}.{{key}}.consume"
                        {{#if (or (eq component.consume undefined) component.consume)}}checked{{/if}}
-                       style="margin:0;width:auto;"/>
+                       style="margin:0;width:auto; cursor:pointer;"/>
             </div>
         {{/if}}
     {{/if}}

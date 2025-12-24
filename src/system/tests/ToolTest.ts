@@ -138,7 +138,12 @@ class ToolTestCustomized implements TestCustomized {
             let roll;
             let total;
 
-            if (result?.rolls && result.rolls.length > 0) {
+            // Check if result is an array of rolls (some DnD5e versions)
+            if (Array.isArray(result) && result.length > 0) {
+                roll = result[0];
+                total = roll.total;
+                console.log("Retrieved roll from array format:", total);
+            } else if (result?.rolls && result.rolls.length > 0) {
                 // DnD5e v3+ returns {rolls: [roll]}
                 roll = result.rolls[0];
                 total = roll.total;
@@ -152,6 +157,7 @@ class ToolTestCustomized implements TestCustomized {
                 total = result.total;
             } else {
                 console.error("Unexpected roll result format:", result);
+                console.error("Result type:", typeof result, "Is array:", Array.isArray(result));
                 console.error("Available properties:", Object.keys(result || {}));
 
                 // Try to find the roll in the chat message that was just posted
