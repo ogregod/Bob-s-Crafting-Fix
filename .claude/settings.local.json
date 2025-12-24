@@ -17,7 +17,8 @@
       "Bash(powershell:*)",
       "Bash(npm run build:dev:*)",
       "Bash(npm run:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }
