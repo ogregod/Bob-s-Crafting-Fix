@@ -170,7 +170,17 @@
                         <div class="test-and-card" style="margin-bottom: 10px; border: 1px solid var(--beavers-item-border-color); border-radius: 6px; overflow: hidden;">
                             <div class="flexrow header" style="cursor: pointer; background: rgba(0, 0, 0, 0.08);" data-collapse-target="test-and-{{@key}}">
                                 <i class="fas fa-chevron-down" style="margin-right: 8px; transition: transform 0.2s;"></i>
-                                <div class="name">{{localize "beaversCrafting.recipe.beaversTests.test"}} {{@key}}</div>
+                                {{#if ../editable}}
+                                    <input type="text"
+                                           name="flags.beavers-crafting.recipe.beaversTests.ands.{{@key}}.name"
+                                           value="{{#if this.name}}{{this.name}}{{else}}{{localize "beaversCrafting.recipe.beaversTests.test"}} {{@key}}{{/if}}"
+                                           placeholder="{{localize "beaversCrafting.recipe.beaversTests.test"}} {{@key}}"
+                                           style="flex: 1; border: none; background: transparent; font-weight: bold; padding: 4px;"
+                                           onclick="event.stopPropagation();"
+                                           title="Click to edit test name"/>
+                                {{else}}
+                                    <div class="name">{{#if this.name}}{{this.name}}{{else}}{{localize "beaversCrafting.recipe.beaversTests.test"}} {{@key}}{{/if}}</div>
+                                {{/if}}
                                 <div class="attribute flexrow" style="max-width:40px"
                                      title="{{localize "beaversCrafting.recipe.beaversTests.hitsHint"}}">
                                     {{localize "beaversCrafting.recipe.beaversTests.hits"}}:
@@ -197,7 +207,7 @@
                                     </div>
                                     {{#if ../../editable}}
                                         <div class="attribute" style="flex:0;width:30px;flex-basis:auto;margin-top:5px;text-align: center;">
-                                            <a class="item-delete" data-and="{{@../key}}" data-or="{{@key}}">
+                                            <a class="item-delete" data-and="{{@../key}}" data-or="{{@key}}" onclick="event.stopPropagation();">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                         </div>

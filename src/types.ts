@@ -209,7 +209,8 @@ interface BeaversTestAnd {
     ors: {
         [key: number]: SerializedTest<any>
     },
-    hits: number
+    hits: number,
+    name?: string
 }
 
 interface SelectData {
