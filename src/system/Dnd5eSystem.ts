@@ -377,14 +377,26 @@ export class Dnd5eSystem {
 
             if (component.quantity > 0) {
                 // Adding items
+                console.log(`[Dnd5eSystem] Processing component for addition:`, {
+                    name: component.name,
+                    type: component.type,
+                    uuid: component.uuid,
+                    quantity: component.quantity
+                });
+
                 // Check if this is a spell - validate before adding
                 if (component.type === "spell") {
+                    console.log(`[Dnd5eSystem] Component is a spell, fetching spell item...`);
                     // Get the spell item to validate
                     const spellItem = await this.getSpellItemFromComponent(component);
+                    console.log(`[Dnd5eSystem] Spell item retrieved:`, spellItem);
+
                     if (spellItem) {
+                        console.log(`[Dnd5eSystem] Validating spell for wizard...`);
                         // Validate wizard class and level
                         await this.validateAndPrepareSpell(actor, spellItem);
 
+                        console.log(`[Dnd5eSystem] Validation passed, adding spell to spellbook...`);
                         // If validation passes, add the spell to spellbook
                         const spellData = spellItem.toObject();
                         // Set spell as unprepared by default
@@ -398,6 +410,7 @@ export class Dnd5eSystem {
                         // @ts-ignore
                         ui.notifications.info(`${actor.name} learned ${spellItem.name}!`);
                     } else {
+                        console.log(`[Dnd5eSystem] Spell item not found, treating as regular item`);
                         // Spell item not found, treat as regular item
                         const existing = this.findMatchingItem(actor, component);
                         if (existing) {
@@ -411,6 +424,7 @@ export class Dnd5eSystem {
                         }
                     }
                 } else {
+                    console.log(`[Dnd5eSystem] Component is not a spell (type: ${component.type}), handling normally`);
                     // Not a spell - handle normally
                     const existing = this.findMatchingItem(actor, component);
                     if (existing) {
