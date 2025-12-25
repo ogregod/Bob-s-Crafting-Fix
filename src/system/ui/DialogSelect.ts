@@ -25,6 +25,8 @@ export class DialogSelect {
      */
     static async show(options: SelectOptions): Promise<string> {
         return new Promise((resolve, reject) => {
+            let isResolved = false;
+
             // Create content with a grid of clickable items
             const items = Object.entries(options.choices).map(([id, choice]) => {
                 const imgSrc = choice.img || "icons/svg/item-bag.svg";
@@ -86,15 +88,23 @@ export class DialogSelect {
                     cancel: {
                         icon: '<i class="fas fa-times"></i>',
                         label: "Cancel",
-                        callback: () => reject(new Error("Dialog cancelled"))
+                        callback: () => {
+                            isResolved = true;
+                            reject(new Error("Dialog cancelled"));
+                        }
                     }
                 },
                 default: "cancel",
-                close: () => reject(new Error("Dialog closed without selection")),
+                close: () => {
+                    if (!isResolved) {
+                        reject(new Error("Dialog closed without selection"));
+                    }
+                },
                 render: (html: any) => {
                     // Add click handlers to items
                     $(html).find('.dialog-select-item').on('click', function() {
                         const choiceId = $(this).data('choice-id');
+                        isResolved = true;
                         dialog.close();
                         resolve(choiceId);
                     });

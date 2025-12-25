@@ -85,7 +85,9 @@ export class TestHandler{
         const testAnd = this.getCurrentTestAnd();
         //fix name for tool uuid !
         for(const [id,or] of  Object.entries(testAnd.ors)){
-            choices[id] = {text:this.getTest(or).render()}
+            const testRender = this.getTest(or).render();
+            const testName = testAnd.name ? `${testAnd.name}: ${testRender}` : testRender;
+            choices[id] = {text:testName}
         }
         const choice = parseInt(await DialogSelect.show({choices:choices}));
         return testAnd.ors[choice];

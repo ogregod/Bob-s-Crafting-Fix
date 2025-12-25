@@ -68,7 +68,7 @@ export class ActorSheetTab {
         tabBody.find(".removeCrafting").on("click",(e)=>{
             const id = e.currentTarget.dataset.id;
             const flags = {}
-            flags["beavers-crafting.crafting.-="+id] = null;
+            flags[`${Settings.NAMESPACE}.crafting.-=${id}`] = null;
             void this.app.actor.update({flags:flags});
         });
         tabBody.find(".advanceCrafting").on("click",(e)=>{

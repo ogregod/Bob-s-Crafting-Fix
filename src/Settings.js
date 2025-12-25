@@ -139,7 +139,7 @@ export class Settings {
             scope: "world",
             config: true,
             requiresReload: true,
-            default: "fa-scroll",
+            default: "fa-hammer",
             type: String,
         });
         game.settings.register(this.NAMESPACE, this.SEPARATE_CRAFTED_ITEMS, {
