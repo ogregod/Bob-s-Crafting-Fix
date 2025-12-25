@@ -200,6 +200,14 @@ export class Dnd5eSystem {
      * @returns Changes made (for rollback)
      */
     async actorComponentListAdd(actor: Actor, components: Component[]): Promise<ItemChange> {
+        console.log("[Dnd5eSystem] actorComponentListAdd called with components:", components.map(c => ({
+            name: c.name,
+            quantity: c.quantity,
+            consume: c.consume,
+            totalUses: c.totalUses,
+            usesNeeded: c.usesNeeded
+        })));
+
         const toCreate: any[] = [];
         const toUpdate: any[] = [];
         const toDelete: string[] = [];
