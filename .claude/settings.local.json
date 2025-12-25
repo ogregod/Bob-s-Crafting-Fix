@@ -21,7 +21,11 @@
       "Bash(npx tsc:*)",
       "Bash(npm run release:*)",
       "Bash(findstr:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npx gulp:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
