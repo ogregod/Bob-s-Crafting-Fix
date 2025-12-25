@@ -15,8 +15,8 @@
         <input {{#unless editable}}disabled{{/unless}}
                type="number"
                step="0.01"
-               name="system.weight"
-               value="{{item.system.weight}}"
+               name="system.weight.value"
+               value="{{#if item.system.weight}}{{item.system.weight.value}}{{/if}}"
                placeholder="0"/>
     </div>
 
