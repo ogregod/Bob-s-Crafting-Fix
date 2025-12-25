@@ -202,7 +202,8 @@ export class Crafting implements CraftingData {
         const componentList: Component[] = [];
         for (const componentResult of this.result._components.required._data) {
             const component = new Component(componentResult.component);
-            if (componentResult.userInteraction === "always") {
+            // Only process required items if they have consume=true and userInteraction is always
+            if (componentResult.userInteraction === "always" && component.consume !== false) {
                 componentList.push(component);
             }
         }
@@ -224,7 +225,9 @@ export class Crafting implements CraftingData {
         }
         this.actor = await fromUuid(this.actor.uuid);
         for (const componentResult of this.result._components.required._data) {
-            if (componentResult.userInteraction === "always") {
+            const component = new Component(componentResult.component);
+            // Only mark as processed if consume is not explicitly false
+            if (componentResult.userInteraction === "always" && component.consume !== false) {
                 componentResult.setProcessed(true);
             }
         }

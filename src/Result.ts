@@ -240,6 +240,14 @@ export class Result implements ResultApi, ResultData {
             userInteraction = "onSuccess";
           }
         }
+        // Handle required components with consume=true
+        if (type === "required" && componentData.consume === true) {
+          if(this._recipe.beaversTests?.consume){
+            userInteraction = "always";
+          }else {
+            userInteraction = "onSuccess";
+          }
+        }
         componentResult.userInteraction = userInteraction;
         fn(componentResult, quantity);
     }
