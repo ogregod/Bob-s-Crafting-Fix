@@ -40,6 +40,7 @@ export class Dnd5eSystem {
     public configCanRollAbility: boolean = true;
 
     constructor() {
+        // @ts-ignore - Foundry VTT global
         this.dnd5eVersion = (game as any).system?.version || "5.0.0";
     }
 
@@ -146,6 +147,7 @@ export class Dnd5eSystem {
      * @param options Roll options
      * @returns The roll result
      */
+    // @ts-ignore - Foundry VTT Actor type
     async actorRollSkill(actor: Actor, skillId: string, options: any = {}): Promise<any> {
         try {
             // DnD 5e 5.x+ API
@@ -164,6 +166,7 @@ export class Dnd5eSystem {
      * @param options Roll options
      * @returns The roll result
      */
+    // @ts-ignore - Foundry VTT Actor type
     async actorRollAbility(actor: Actor, abilityId: string, options: any = {}): Promise<any> {
         try {
             // DnD 5e 5.x+ API
@@ -182,6 +185,7 @@ export class Dnd5eSystem {
      * @param options Roll options
      * @returns The roll result
      */
+    // @ts-ignore - Foundry VTT Actor type
     async actorRollTool(actor: Actor, item: any, options: any = {}): Promise<any> {
         try {
             // DnD 5e tool check
@@ -194,11 +198,139 @@ export class Dnd5eSystem {
     }
 
     /**
+     * Check if an actor is a wizard
+     * @param actor The actor to check
+     * @returns True if the actor has wizard class levels
+     */
+    // @ts-ignore - Foundry VTT Actor type
+    private isWizard(actor: Actor): boolean {
+        // @ts-ignore
+        const classes = actor.classes;
+        if (!classes) return false;
+
+        // Check if wizard class exists and has levels
+        const wizardClass = classes.wizard;
+        return wizardClass && wizardClass.system?.levels > 0;
+    }
+
+    /**
+     * Get the wizard level of an actor
+     * @param actor The actor
+     * @returns Wizard level or 0 if not a wizard
+     */
+    // @ts-ignore - Foundry VTT Actor type
+    private getWizardLevel(actor: Actor): number {
+        // @ts-ignore
+        const wizardClass = actor.classes?.wizard;
+        return wizardClass?.system?.levels || 0;
+    }
+
+    /**
+     * Calculate the maximum spell level a wizard can learn based on their level
+     * @param wizardLevel The wizard's class level
+     * @returns Maximum spell level (0-9)
+     */
+    private getMaxSpellLevel(wizardLevel: number): number {
+        if (wizardLevel >= 17) return 9;
+        if (wizardLevel >= 15) return 8;
+        if (wizardLevel >= 13) return 7;
+        if (wizardLevel >= 11) return 6;
+        if (wizardLevel >= 9) return 5;
+        if (wizardLevel >= 7) return 4;
+        if (wizardLevel >= 5) return 3;
+        if (wizardLevel >= 3) return 2;
+        if (wizardLevel >= 1) return 1;
+        return 0;
+    }
+
+    /**
+     * Handle learning a spell from crafting
+     * Validates that the actor is a wizard and high enough level
+     * @param actor The actor learning the spell
+     * @param spellItem The spell item to learn
+     * @throws Error if validation fails
+     */
+    // @ts-ignore - Foundry VTT Actor type
+    private async validateAndPrepareSpell(actor: Actor, spellItem: any): Promise<void> {
+        const spellLevel = spellItem.system?.level ?? 0;
+        const spellName = spellItem.name;
+
+        // Check if actor is a wizard
+        if (!this.isWizard(actor)) {
+            const errorMsg = `${actor.name} must be a wizard to learn spells from crafting.`;
+            // @ts-ignore
+            ui.notifications.error(errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        // Get wizard level and max spell level
+        const wizardLevel = this.getWizardLevel(actor);
+        const maxSpellLevel = this.getMaxSpellLevel(wizardLevel);
+
+        // Check if wizard is high enough level for this spell
+        if (spellLevel > maxSpellLevel) {
+            const errorMsg = `${actor.name} is a level ${wizardLevel} wizard and cannot learn ${spellName} (a level ${spellLevel} spell). Wizards can learn level ${spellLevel} spells at wizard level ${this.getMinLevelForSpell(spellLevel)}.`;
+            // @ts-ignore
+            ui.notifications.error(errorMsg);
+            throw new Error(errorMsg);
+        }
+
+        // Check if spell is already in spellbook
+        // @ts-ignore - Foundry VTT items collection
+        const existingSpell = actor.items.find(i => i.type === "spell" && i.name === spellName);
+        if (existingSpell) {
+            const warnMsg = `${actor.name} already knows ${spellName}.`;
+            // @ts-ignore
+            ui.notifications.warn(warnMsg);
+            throw new Error(warnMsg);
+        }
+    }
+
+    /**
+     * Get the minimum wizard level required to learn a spell of given level
+     * @param spellLevel The spell level (0-9)
+     * @returns Minimum wizard level required
+     */
+    private getMinLevelForSpell(spellLevel: number): number {
+        switch (spellLevel) {
+            case 0: return 1;
+            case 1: return 1;
+            case 2: return 3;
+            case 3: return 5;
+            case 4: return 7;
+            case 5: return 9;
+            case 6: return 11;
+            case 7: return 13;
+            case 8: return 15;
+            case 9: return 17;
+            default: return 1;
+        }
+    }
+
+    /**
+     * Get the spell item from a component
+     * @param component The component representing a spell
+     * @returns The spell item or null
+     */
+    private async getSpellItemFromComponent(component: Component): Promise<any> {
+        if (component.uuid) {
+            // @ts-ignore - Foundry VTT global function
+            const item = await fromUuid(component.uuid);
+            // @ts-ignore - Foundry VTT item type
+            if (item && item.type === "spell") {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Add or remove components from an actor's inventory
      * @param actor The actor
      * @param components List of components (negative quantity = remove)
      * @returns Changes made (for rollback)
      */
+    // @ts-ignore - Foundry VTT Actor type
     async actorComponentListAdd(actor: Actor, components: Component[]): Promise<ItemChange> {
         console.log("[Dnd5eSystem] actorComponentListAdd called with components:", components.map(c => ({
             name: c.name,
@@ -220,7 +352,9 @@ export class Dnd5eSystem {
 
             if (component.type === "RollTable") {
                 // Roll tables need special handling
+                // @ts-ignore - Foundry VTT global function
                 const table = await fromUuid(component.uuid);
+                // @ts-ignore - Foundry VTT RollTable type
                 if (table && table instanceof RollTable) {
                     // @ts-ignore
                     const results = await table.drawMany(component.quantity, {displayChat: false});
@@ -229,6 +363,7 @@ export class Dnd5eSystem {
                             continue;
                         }
                         // Get the item from the result
+                        // @ts-ignore - Foundry VTT global function
                         const resultDoc = await fromUuid(result.documentCollection + "." + result.documentId);
                         if (resultDoc) {
                             const itemComponent = Component.fromEntity(resultDoc);
@@ -242,15 +377,51 @@ export class Dnd5eSystem {
 
             if (component.quantity > 0) {
                 // Adding items
-                const existing = this.findMatchingItem(actor, component);
-                if (existing) {
-                    toUpdate.push({
-                        _id: existing.id,
-                        "system.quantity": existing.system.quantity + component.quantity
-                    });
+                // Check if this is a spell - validate before adding
+                if (component.type === "spell") {
+                    // Get the spell item to validate
+                    const spellItem = await this.getSpellItemFromComponent(component);
+                    if (spellItem) {
+                        // Validate wizard class and level
+                        await this.validateAndPrepareSpell(actor, spellItem);
+
+                        // If validation passes, add the spell to spellbook
+                        const spellData = spellItem.toObject();
+                        // Set spell as unprepared by default
+                        if (spellData.system.preparation) {
+                            spellData.system.preparation.prepared = false;
+                        }
+                        toCreate.push(spellData);
+
+                        // Log success
+                        console.log(`[Dnd5eSystem] ${actor.name} learned spell: ${spellItem.name}`);
+                        // @ts-ignore
+                        ui.notifications.info(`${actor.name} learned ${spellItem.name}!`);
+                    } else {
+                        // Spell item not found, treat as regular item
+                        const existing = this.findMatchingItem(actor, component);
+                        if (existing) {
+                            toUpdate.push({
+                                _id: existing.id,
+                                "system.quantity": existing.system.quantity + component.quantity
+                            });
+                        } else {
+                            const itemData = await this.componentToItemData(component);
+                            toCreate.push(itemData);
+                        }
+                    }
                 } else {
-                    const itemData = await this.componentToItemData(component);
-                    toCreate.push(itemData);
+                    // Not a spell - handle normally
+                    const existing = this.findMatchingItem(actor, component);
+                    if (existing) {
+                        toUpdate.push({
+                            _id: existing.id,
+                            "system.quantity": existing.system.quantity + component.quantity
+                        });
+                    } else {
+                        const itemData = await this.componentToItemData(component);
+                        toCreate.push(itemData);
+                    }
                 }
             } else if (component.quantity < 0) {
                 // Removing items
@@ -264,6 +435,7 @@ export class Dnd5eSystem {
                         const usesToConsume = component.usesNeeded; // How many uses this recipe needs (e.g., 4)
 
                         // Get current remaining uses (or initialize to total if not set)
+                        // @ts-ignore - Foundry VTT global namespace
                         let remainingUses = foundry.utils.getProperty(existing, `flags.${NAMESPACE}.remainingUses`);
                         if (remainingUses === undefined || remainingUses === null) {
                             remainingUses = totalUses;
@@ -388,6 +560,7 @@ export class Dnd5eSystem {
      * @param component The component to find
      * @returns The matching item or undefined
      */
+    // @ts-ignore - Foundry VTT Actor type
     private findMatchingItem(actor: Actor, component: ComponentData): any {
         return actor.items.find(item => this.isSameItem(item, component));
     }
@@ -400,12 +573,14 @@ export class Dnd5eSystem {
     private async componentToItemData(component: Component): Promise<any> {
         // If we have a UUID, fetch the source item
         if (component.uuid) {
+            // @ts-ignore - Foundry VTT global function
             const sourceItem = await fromUuid(component.uuid);
             if (sourceItem) {
                 const itemData = sourceItem.toObject();
                 itemData.system.quantity = component.quantity;
                 // Apply flags
                 if (component.flags) {
+                    // @ts-ignore - Foundry VTT global namespace
                     itemData.flags = foundry.utils.mergeObject(itemData.flags || {}, component.flags);
                 }
                 return itemData;
