@@ -384,47 +384,36 @@ export class Dnd5eSystem {
                     quantity: component.quantity
                 });
 
-                // Check if this is a spell - validate before adding
-                if (component.type === "spell") {
-                    console.log(`[Dnd5eSystem] Component is a spell, fetching spell item...`);
-                    // Get the spell item to validate
-                    const spellItem = await this.getSpellItemFromComponent(component);
-                    console.log(`[Dnd5eSystem] Spell item retrieved:`, spellItem);
+                // Check if this is a spell by fetching the actual item
+                // (component.type may be generic "Item" even for spells)
+                let actualItem: any = null;
+                if (component.uuid) {
+                    // @ts-ignore - Foundry VTT global function
+                    actualItem = await fromUuid(component.uuid);
+                    console.log(`[Dnd5eSystem] Fetched actual item from UUID:`, actualItem);
+                }
 
-                    if (spellItem) {
-                        console.log(`[Dnd5eSystem] Validating spell for wizard...`);
-                        // Validate wizard class and level
-                        await this.validateAndPrepareSpell(actor, spellItem);
+                // @ts-ignore - Check actual item type
+                if (actualItem && actualItem.type === "spell") {
+                    console.log(`[Dnd5eSystem] Item is a spell, validating for wizard...`);
+                    // Validate wizard class and level
+                    await this.validateAndPrepareSpell(actor, actualItem);
 
-                        console.log(`[Dnd5eSystem] Validation passed, adding spell to spellbook...`);
-                        // If validation passes, add the spell to spellbook
-                        const spellData = spellItem.toObject();
-                        // Set spell as unprepared by default
-                        if (spellData.system.preparation) {
-                            spellData.system.preparation.prepared = false;
-                        }
-                        toCreate.push(spellData);
-
-                        // Log success
-                        console.log(`[Dnd5eSystem] ${actor.name} learned spell: ${spellItem.name}`);
-                        // @ts-ignore
-                        ui.notifications.info(`${actor.name} learned ${spellItem.name}!`);
-                    } else {
-                        console.log(`[Dnd5eSystem] Spell item not found, treating as regular item`);
-                        // Spell item not found, treat as regular item
-                        const existing = this.findMatchingItem(actor, component);
-                        if (existing) {
-                            toUpdate.push({
-                                _id: existing.id,
-                                "system.quantity": existing.system.quantity + component.quantity
-                            });
-                        } else {
-                            const itemData = await this.componentToItemData(component);
-                            toCreate.push(itemData);
-                        }
+                    console.log(`[Dnd5eSystem] Validation passed, adding spell to spellbook...`);
+                    // If validation passes, add the spell to spellbook
+                    const spellData = actualItem.toObject();
+                    // Set spell as unprepared by default
+                    if (spellData.system.preparation) {
+                        spellData.system.preparation.prepared = false;
                     }
+                    toCreate.push(spellData);
+
+                    // Log success
+                    console.log(`[Dnd5eSystem] ${actor.name} learned spell: ${actualItem.name}`);
+                    // @ts-ignore
+                    ui.notifications.info(`${actor.name} learned ${actualItem.name}!`);
                 } else {
-                    console.log(`[Dnd5eSystem] Component is not a spell (type: ${component.type}), handling normally`);
+                    console.log(`[Dnd5eSystem] Not a spell, handling as regular item`);
                     // Not a spell - handle normally
                     const existing = this.findMatchingItem(actor, component);
                     if (existing) {
