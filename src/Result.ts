@@ -188,7 +188,8 @@ export class Result implements ResultApi, ResultData {
         if(this._currencyResult.isConsumed) {
             const id = this._currencyResult.name;
             const configCurrency = Dnd5eCurrency.CURRENCIES.find(c=>c.id===id);
-            let name = configCurrency?.label || "";
+            // @ts-ignore - Foundry VTT global
+            let name = configCurrency?.label ? game.i18n.localize(configCurrency.label) : "";
             void await this._currencyResult.pay(this._actor, true);
             const component = configCurrency?.component?configCurrency.component:new Component(
                 {
@@ -384,7 +385,7 @@ export class CurrencyResult implements CurrencyResultData {
         const currencies = {};
         currencies[this.name] = this.value*-1;
         const canPay = await Dnd5eCurrency.actorCurrenciesCanAdd(actor, currencies);
-        this.hasError = canPay;
+        this.hasError = !canPay;
         return canPay;
     }
 
