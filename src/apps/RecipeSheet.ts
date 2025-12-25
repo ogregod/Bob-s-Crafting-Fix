@@ -145,6 +145,16 @@ export class RecipeSheet {
       });
 
     console.log("[RecipeSheet] Main tab rendered");
+
+    // Log item.system values to identify "[object Object]" errors
+    console.log("[RecipeSheet] item.system.weight:", this.item.system?.weight, typeof this.item.system?.weight);
+    console.log("[RecipeSheet] item.system.price:", this.item.system?.price, typeof this.item.system?.price);
+    console.log("[RecipeSheet] item.system.price.value:", this.item.system?.price?.value, typeof this.item.system?.price?.value);
+    console.log("[RecipeSheet] item.system.price.denomination:", this.item.system?.price?.denomination, typeof this.item.system?.price?.denomination);
+    console.log("[RecipeSheet] item.system.rarity:", this.item.system?.rarity, typeof this.item.system?.rarity);
+    console.log("[RecipeSheet] item.system.chatFlavor:", this.item.system?.chatFlavor, typeof this.item.system?.chatFlavor);
+    console.log("[RecipeSheet] item.system.unidentified:", this.item.system?.unidentified, typeof this.item.system?.unidentified);
+
     let description = "";
     if (game["version"].split(".")[0] >= 12) {
       description = await renderTemplateFunc("modules/bobs-crafting-guide/templates/recipe-descriptionV12.hbs",
