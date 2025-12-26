@@ -73,8 +73,8 @@ export class SheetIntegration {
             tabContent = existingTabContent;
             tabContent.empty();
         } else {
-            // Create new tab content container with scrollable wrapper
-            tabContent = $(`<div class="tab" data-group="primary" data-tab="${tabConfig.id}" style="max-height: 600px; overflow-y: auto; overflow-x: hidden; padding: 10px;"></div>`);
+            // Create new tab content container with full-height flex layout
+            tabContent = $(`<div class="tab" data-group="primary" data-tab="${tabConfig.id}"></div>`);
             body.append(tabContent);
         }
 
@@ -136,15 +136,11 @@ export class SheetIntegration {
             // Tab exists, just update content
             tabContent.innerHTML = '';
         } else {
-            // Create tab content section with scrollable wrapper
+            // Create tab content section with full-height flex layout
             tabContent = document.createElement('section');
             tabContent.className = 'tab';
             tabContent.dataset.tab = tabConfig.id;
             tabContent.dataset.group = 'primary';
-            tabContent.style.maxHeight = '600px';
-            tabContent.style.overflowY = 'auto';
-            tabContent.style.overflowX = 'hidden';
-            tabContent.style.padding = '10px';
 
             contentArea.appendChild(tabContent);
         }
