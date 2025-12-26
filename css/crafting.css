@@ -896,13 +896,6 @@ actor-sheet
     flex-direction: column;
 }
 
-/* Ensure the crafting tab wrapper takes full height */
-.sheet.actor .tab[data-tab="bobs-crafting-guide"] {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
 .beavers-crafting.actor-tab .test-description {
     line-height: 22px;
     flex-wrap:nowrap;
