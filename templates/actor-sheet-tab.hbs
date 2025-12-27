@@ -1,31 +1,41 @@
 <div class="beavers-crafting actor-tab">
-  <div class="crafting-tab-container">
-    <div class="crafting-tab-header">
-      <h3 class="flexrow header beavers-line">
-        <div class="scale">{{localize "beaversCrafting.actorSheet.table.name"}}</div>
-        <div class="attribute" style="min-width:150px;text-align:center;">{{localize "beaversCrafting.actorSheet.table.progress"}}</div>
-        <div class="attribute" style="min-width:100px;text-align:center">{{localize "beaversCrafting.actorSheet.table.status"}}</div>
-        <div class="attribute" style="min-width:50px"><i class="fas fa-cog"></i></div>
-      </h3>
+  <div class="crafting-tab-simple">
+    <!-- Open Crafting Manager Button -->
+    <div class="open-manager-section">
+      <button class="openCraftingManager" type="button">
+        <i class="fas fa-hammer"></i>
+        <span>{{localize "beaversCrafting.actorSheet.openManager"}}</span>
+        <i class="fas fa-external-link-alt"></i>
+      </button>
     </div>
 
-    <div class="crafting-tab-content">
-      <div class="beavers-crafting-item add-recipe-section">
-        <div class="flexrow beavers-line" style="line-height:24px;text-align:right">
-          <a class="addCrafting">
-            <div class="crafting-rollIcon">
-              <i class="fa-solid fa-circle-plus"></i>
-              <span>{{localize "beaversCrafting.actorSheet.table.add" }}</span>
-            </div>
-          </a>
+    <!-- Quick Summary -->
+    <div class="crafting-summary">
+      <h3>{{localize "beaversCrafting.actorSheet.quickSummary"}}</h3>
+      {{#if folders}}
+        <div class="summary-stats">
+          <div class="stat-item">
+            <i class="fas fa-tasks"></i>
+            <span class="stat-label">{{localize "beaversCrafting.actorSheet.activeProjects"}}:</span>
+            <span class="stat-value">{{projectCount}}</span>
+          </div>
         </div>
-      </div>
-
-      <div class="beavers-seperator"></div>
-
-      <div class="crafting-list-scroll">
-        {{>beavers-folders renderTemplate="beavers-actor-folder-item"}}
-      </div>
+        <div class="project-quick-list">
+          {{#each folders as |folder|}}
+            {{#each folder.recipes as |item|}}
+              <div class="quick-project-item">
+                <span class="project-name">{{item.chatData.title}}</span>
+                <span class="project-status">{{item.chatData.status}}</span>
+              </div>
+            {{/each}}
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="no-projects-hint">
+          <i class="fas fa-info-circle"></i>
+          <p>{{localize "beaversCrafting.actorSheet.noActiveProjects"}}</p>
+        </div>
+      {{/if}}
     </div>
   </div>
 </div>

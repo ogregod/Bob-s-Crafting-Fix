@@ -887,13 +887,131 @@ beavers-recipe
     line-height:15px
 }
 /****
-actor-sheet
+actor-sheet - Simplified tab with manager button
  */
-.beavers-crafting.actor-tab{
+.beavers-crafting.actor-tab {
     color: var(--beavers-actor-color);
-    height: 100%;
+    padding: 20px;
+}
+
+.beavers-crafting.actor-tab .crafting-tab-simple {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Open Manager Button */
+.beavers-crafting.actor-tab .open-manager-section {
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.beavers-crafting.actor-tab .openCraftingManager {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 32px;
+    font-size: 16px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.beavers-crafting.actor-tab .openCraftingManager:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+    background: linear-gradient(135deg, #357abd 0%, #2868a8 100%);
+}
+
+.beavers-crafting.actor-tab .openCraftingManager:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+}
+
+/* Summary Section */
+.beavers-crafting.actor-tab .crafting-summary {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--beavers-actor-border-color);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.beavers-crafting.actor-tab .crafting-summary h3 {
+    margin: 0 0 12px 0;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--beavers-actor-color-highlight);
+}
+
+.beavers-crafting.actor-tab .summary-stats {
+    margin-bottom: 12px;
+}
+
+.beavers-crafting.actor-tab .stat-item {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+}
+
+.beavers-crafting.actor-tab .stat-item i {
+    color: var(--beavers-actor-color-highlight);
+}
+
+.beavers-crafting.actor-tab .stat-value {
+    font-weight: 600;
+    margin-left: auto;
+}
+
+.beavers-crafting.actor-tab .project-quick-list {
+    margin-top: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.beavers-crafting.actor-tab .quick-project-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    margin: 2px 0;
+    background: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.beavers-crafting.actor-tab .project-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.beavers-crafting.actor-tab .project-status {
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.beavers-crafting.actor-tab .no-projects-hint {
+    text-align: center;
+    padding: 24px;
+    opacity: 0.6;
+}
+
+.beavers-crafting.actor-tab .no-projects-hint i {
+    font-size: 32px;
+    margin-bottom: 12px;
+    opacity: 0.5;
+}
+
+.beavers-crafting.actor-tab .no-projects-hint p {
+    margin: 4px 0;
 }
 
 .beavers-crafting.actor-tab .test-description {
@@ -1260,4 +1378,71 @@ actor-sheet
 
 .tidy-tab-contents.active .beavers-crafting-actor-tab {
     display:block !important;
+}
+/****
+Crafting Manager Window - Full-featured popup
+ */
+.beavers-crafting.crafting-manager {
+    color: var(--beavers-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.beavers-crafting.crafting-manager .window-content {
+    overflow: hidden;
+    height: 100%;
+}
+
+.beavers-crafting.crafting-manager .crafting-manager-container {
+    height: 100%;
+}
+
+/* Active Projects Panel */
+.beavers-crafting.crafting-manager .active-projects {
+    background: rgba(0, 0, 0, 0.02);
+    border-left: 2px groove var(--beavers-border-color);
+}
+
+.beavers-crafting.crafting-manager .projects-header {
+    padding: 16px;
+    background: linear-gradient(to bottom,
+                rgba(255, 255, 255, 0.05),
+                rgba(0, 0, 0, 0.05));
+    border-bottom: 2px solid var(--beavers-border-color);
+}
+
+.beavers-crafting.crafting-manager .projects-header h3 {
+    margin: 0;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.beavers-crafting.crafting-manager .projects-content {
+    padding: 12px;
+}
+
+.beavers-crafting.crafting-manager .no-projects {
+    text-align: center;
+    padding: 48px 24px;
+    opacity: 0.5;
+}
+
+.beavers-crafting.crafting-manager .no-projects i {
+    display: block;
+    margin-bottom: 16px;
+    color: var(--beavers-color);
+}
+
+.beavers-crafting.crafting-manager .no-projects p {
+    margin: 8px 0;
+    font-size: 14px;
+}
+
+.beavers-crafting.crafting-manager .no-projects .hint {
+    font-size: 12px;
+    font-style: italic;
 }

@@ -3,12 +3,22 @@
     "actorLink": "Recipes",
     "actorSheet": {
       "tab": "Crafting",
+      "openManager": "Open Crafting Manager",
+      "quickSummary": "Quick Summary",
+      "activeProjects": "Active Projects",
+      "noActiveProjects": "No active crafting projects",
       "table": {
         "name": "Name",
         "status": "Status",
         "progress": "Progress",
         "add": "Add"
       }
+    },
+    "manager": {
+      "title": "Crafting Manager",
+      "activeProjects": "Active Projects",
+      "noActiveProjects": "No active crafting projects",
+      "noActiveProjectsHint": "Start a project from the recipe browser on the left"
     },
     "inventory": {
       "type": "Type",

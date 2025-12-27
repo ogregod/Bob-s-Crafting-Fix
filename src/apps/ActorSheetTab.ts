@@ -1,4 +1,5 @@
 import {CraftingApp} from "./CraftingApp.js";
+import {CraftingManagerApp} from "./CraftingManagerApp.js";
 import {Crafting} from "../Crafting.js";
 import {Settings} from "../Settings.js";
 import { sortByFolder } from "../helpers/Folder.js";
@@ -44,6 +45,7 @@ export class ActorSheetTab {
         const tabBody = $(await renderTemplateFunc('modules/bobs-crafting-guide/templates/actor-sheet-tab.hbs',
             {
                 folders:sortedFolders,
+                projectCount: unsortedFolders.length,
             }));
         SheetIntegration.addTab(this.app, this.html, this.app.actor, { id: Settings.ACTOR_TAB_ID, label: label, html: `<i class="fas ${icon}"/>` }, tabBody);
         this.activateListeners(tabBody);
@@ -62,27 +64,14 @@ export class ActorSheetTab {
     }
 
     activateListeners(tabBody:JQuery) {
-        tabBody.find(".addCrafting").on("click",(event)=>{
-            new CraftingApp(this.app.actor).render(true);
+        // Open crafting manager button
+        tabBody.find(".openCraftingManager").on("click", (event) => {
+            new CraftingManagerApp(this.app.actor).render(true);
         });
-        tabBody.find(".removeCrafting").on("click",(e)=>{
-            const id = e.currentTarget.dataset.id;
-            const flags = {}
-            flags[`${Settings.NAMESPACE}.crafting.-=${id}`] = null;
-            void this.app.actor.update({flags:flags});
-        });
-        tabBody.find(".advanceCrafting").on("click",(e)=>{
-            const id = (e.currentTarget.dataset.id as string);
-            void this.craftingList[id].continueCrafting().then(()=>{
-                this.app.render();
-            });
-        });
+
         this.html.find('nav [data-group="primary"][data-tab]').click(e => {
             this.app.activeTab = e.currentTarget.dataset.tab;
             this.app.render();
-        });
-        this.html.find(".folderName").on("click", (e)=>{
-            $(e.currentTarget).parent(".folder").toggleClass(["open","close"]);
         });
     }
 
