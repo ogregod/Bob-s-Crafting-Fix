@@ -1,7 +1,7 @@
 {
 	"name": "bobs-crafting-guide",
 	"title": "Bob's Crafting Guide",
-	"version": "4.1.7",
+	"version": "1.0.3",
 	"description": "Crafting",
 	"devDir": "c:\\vtts\\v13.348\\Data\\modules",
 	"#devDir": "c:\\vtts\\v12.331\\Data\\modules",

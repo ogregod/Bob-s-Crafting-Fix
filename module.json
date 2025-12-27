@@ -2,7 +2,7 @@
   "title": "Bob's Crafting Guide",
   "description": "A Module for crafting, brewing, harvesting, mining, fabricating, gathering, character advancement, tech tree, skill tree, ability tree, downtime activities, factions / organisation reputation, quest logs, skill training",
   "id": "bobs-crafting-guide",
-  "version": "4.1.6",
+  "version": "1.0.3",
   "authors": [
     {
       "name": "Bob (ogregod)",

@@ -101,11 +101,6 @@ export class CraftingManagerApp extends Application {
     async _render(force?: boolean, options?: Application.RenderOptions): Promise<void> {
         await super._render(force, options);
 
-        // After the window is rendered, render the initial recipe details
-        if (this.element && this.element.length > 0) {
-            await this.craftingApp.renderRecipeSheet();
-        }
-
         if (!this._hasBeenCentered) {
             this.centerWindow();
             this._hasBeenCentered = true;
