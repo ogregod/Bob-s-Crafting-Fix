@@ -110,11 +110,33 @@ export class CraftingManagerApp extends Application {
     activateListeners(html) {
         super.activateListeners(html);
 
-        // Set up the crafting app element to point to our recipe browser section
         const browserElement = html.find(".recipe-browser");
 
-        // Activate crafting app listeners for recipe browsing
-        this.craftingApp.activateListeners(browserElement);
+        // Recipe browser listeners - simplified version without drag-drop
+        browserElement.find(".sidebar select.search").on("change", (e) => {
+            this.craftingApp.data.filter = $(e.target).val();
+            this.craftingApp.data.selected = null;
+            this.craftingApp.data.content = null;
+            this.craftingApp.data.folders = {};
+            this.render();
+        });
+
+        browserElement.find(".folderName").on("click", (e) => {
+            $(e.currentTarget).parent(".folder").toggleClass(["open", "close"]);
+        });
+
+        browserElement.find(".sidebar .fa-sort-amount-up").on("click", (e) => {
+            browserElement.find(".navigation .folder").removeClass("open").addClass("close");
+        });
+
+        browserElement.find(".sidebar .navigation .beavers-folder-item").on("click", (e) => {
+            const id = $(e.currentTarget).data().id;
+            this.craftingApp.selectRecipe(id);
+            browserElement.find(".sidebar .navigation .selected").removeClass("selected");
+            browserElement.find(".sidebar .navigation .beavers-folder-item[data-id='" + id + "']").addClass("selected");
+            // Open full crafting app for this recipe
+            new CraftingApp(this.actor, {}).render(true);
+        });
 
         // Active projects listeners (right panel)
         html.find(".removeCrafting").on("click", (e) => {

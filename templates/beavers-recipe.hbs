@@ -37,12 +37,29 @@
                                   {{#if @last}}<span></span>{{else}}<span class="border"></span>{{/if}}
                                 </span>
                     <div class="test-section flexcol">
-                      <div class="flexrow test-header">
-                        {{hits}} times
-                      </div>
                       {{#each this.ors}}
-                        <div class="flexrow">
-                          {{{beavers-test this (beavers-object "disabled" true "minimized" true )}}}
+                        <div class="test-description flexcol" style="margin-bottom: 8px;">
+                          <div class="flexrow test-header" style="font-weight: 600;">
+                            {{#if this.data.tool}}
+                              {{this.data.tool}}
+                            {{else if this.data.uuid}}
+                              Tool Check
+                            {{else}}
+                              Check
+                            {{/if}}
+                            -
+                            {{#if this.data.skill}}
+                              {{this.data.skill}}
+                            {{else if this.data.ability}}
+                              {{this.data.ability}}
+                            {{else}}
+                              Roll
+                            {{/if}}
+                            - {{../hits}} {{#if (eq ../hits 1)}}Time{{else}}Times{{/if}}
+                          </div>
+                          <div class="flexrow" style="padding-left: 8px; font-style: italic; opacity: 0.9;">
+                            {{{beavers-test this (beavers-object "disabled" true "minimized" true )}}}
+                          </div>
                         </div>
                         {{#unless @last}}
                           <div class="beavers-seperator"></div>
