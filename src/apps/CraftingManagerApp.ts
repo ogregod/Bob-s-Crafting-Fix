@@ -49,15 +49,6 @@ export class CraftingManagerApp extends Application {
         return super.close(options);
     }
 
-    async _render(force?: boolean, options?: Application.RenderOptions): Promise<void> {
-        await super._render(force, options);
-
-        if (!this._hasBeenCentered) {
-            this.centerWindow();
-            this._hasBeenCentered = true;
-        }
-    }
-
     private centerWindow(): void {
         const position = this.position;
         const element = this.element;
@@ -79,7 +70,7 @@ export class CraftingManagerApp extends Application {
     async getData(options = {}) {
         const data: any = await super.getData(options);
 
-        // Get crafting app data for recipes
+        // Get crafting app data for recipes - this will populate the recipe browser
         const craftingData = await this.craftingApp.getData();
         data.craftingApp = craftingData;
 
@@ -107,11 +98,29 @@ export class CraftingManagerApp extends Application {
         return data;
     }
 
+    async _render(force?: boolean, options?: Application.RenderOptions): Promise<void> {
+        await super._render(force, options);
+
+        // After the window is rendered, render the initial recipe details
+        if (this.element && this.element.length > 0) {
+            await this.craftingApp.renderRecipeSheet();
+        }
+
+        if (!this._hasBeenCentered) {
+            this.centerWindow();
+            this._hasBeenCentered = true;
+        }
+    }
+
     activateListeners(html) {
         super.activateListeners(html);
 
-        // Recipe browser listeners (left panel) - delegate to embedded crafting app
+        // Set up the crafting app element to point to our recipe browser section
         const browserElement = html.find(".recipe-browser");
+        // Override the craftingApp's element property
+        (this.craftingApp as any).element = browserElement;
+
+        // Activate crafting app listeners for recipe browsing
         this.craftingApp.activateListeners(browserElement);
 
         // Active projects listeners (right panel)
@@ -127,10 +136,6 @@ export class CraftingManagerApp extends Application {
             void this.craftingList[id].continueCrafting().then(() => {
                 this.render();
             });
-        });
-
-        html.find(".addCrafting").on("click", (event) => {
-            new CraftingApp(this.actor).render(true);
         });
 
         html.find(".folderName").on("click", (e) => {
