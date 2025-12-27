@@ -117,8 +117,6 @@ export class CraftingManagerApp extends Application {
 
         // Set up the crafting app element to point to our recipe browser section
         const browserElement = html.find(".recipe-browser");
-        // Override the craftingApp's element property
-        (this.craftingApp as any).element = browserElement;
 
         // Activate crafting app listeners for recipe browsing
         this.craftingApp.activateListeners(browserElement);
